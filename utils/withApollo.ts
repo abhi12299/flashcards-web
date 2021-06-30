@@ -7,18 +7,21 @@ import {
 import { setContext } from "@apollo/link-context";
 import { RetryLink } from "@apollo/link-retry";
 import ApolloLinkTimeout from "apollo-link-timeout";
+import cookie from "cookie";
+import { NextPageContext } from "next";
+import { createWithApollo } from "./createWithApollo";
 
-export const createApolloClient = () => {
+const createClient = (ctx: NextPageContext) => {
   const httpLink = new HttpLink({
     uri: `${process.env.NEXT_PUBLIC_API_BASE}/graphql`,
   });
   const timeoutLink = new ApolloLinkTimeout(10000); // 10s timeout
 
-  const authLink = setContext((req, { headers }) => {
-    console.log("req is", req);
-    console.log("headers", headers);
-    // const token = localStorage.getItem('token');
-    const token = "";
+  const authLink = setContext((_, { headers }) => {
+    const ck = cookie.parse(
+      ctx ? ctx.req?.headers.cookie || "" : document.cookie
+    );
+    const token = ck.token || "";
     return {
       headers: {
         ...headers,
@@ -49,7 +52,16 @@ export const createApolloClient = () => {
 
   const client = new ApolloClient({
     link,
-    cache: new InMemoryCache(),
+    credentials: "include",
+    // headers: {
+    //   cookie:
+    //     (typeof window === "undefined"
+    //       ? ctx?.req?.headers.cookie
+    //       : undefined) || "",
+    // },
+    cache: new InMemoryCache({}),
   });
   return client;
 };
+
+export const withApollo = createWithApollo(createClient);

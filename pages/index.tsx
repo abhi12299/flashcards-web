@@ -1,9 +1,46 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { GoogleLogin } from 'react-google-login'
+import { useCookies } from 'react-cookie'
+import { MeDocument, useLoginMutation } from '../generated/graphql'
+import { useIsAuthNotRequired } from '../hooks/useIsAuthNotRequired'
+import firebase from '../init/firebase'
 import styles from '../styles/Home.module.css'
+import { withApollo } from '../utils/withApollo'
 
-export default function Home() {
+function Home() {
+  const { loading } = useIsAuthNotRequired('/home', false)
+  const [login] = useLoginMutation()
+  const [_, setTokenCookie] = useCookies(['token'])
+
+  const handleLogin = async () => {
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await firebase.auth().signInWithPopup(provider)
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        return
+      }
+      const idToken = await user.getIdToken()
+      if (!idToken) {
+        return
+      }
+      const response = await login({
+        variables: {
+          idToken,
+          name: user.displayName || ''
+        },
+        refetchQueries: [{ query: MeDocument }]
+      })
+      if (response.data?.login.errors) {
+        console.error(response.data.login.errors)
+      } else {
+        setTokenCookie('token', response.data?.login.accessToken!)
+        // localStorage.setItem('token', response.data?.login.accessToken!)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,28 +49,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <GoogleLogin
-          clientId={process.env.NEXT_PUBLIC_GOOGLE_OAUTH_WEB_CLIENT_ID!}
-          buttonText="Login"
-          onSuccess={console.log}
-          onFailure={console.error}
-          cookiePolicy='single_host_origin'
-        />
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      {
+        loading ?
+          <div>
+            Loading...
+          </div>
+          :
+          <main className={styles.main}>
+            <button onClick={handleLogin}>Login</button>
+          </main>
+      }
     </div>
   )
 }
+
+export default withApollo({ ssr: false })(Home);
