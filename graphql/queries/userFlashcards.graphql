@@ -1,0 +1,10 @@
+query UserFlashcards($limit: Int!, $cursor: String, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+  userFlashcards(
+    input: { limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId }
+  ) {
+    hasMore
+    flashcards {
+      ...UserFlashcardMinimal
+    }
+  }
+}

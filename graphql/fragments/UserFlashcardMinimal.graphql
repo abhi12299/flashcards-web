@@ -1,0 +1,18 @@
+fragment UserFlashcardMinimal on Flashcard {
+  id
+  isFork
+  creator {
+    id
+    name
+    profilePic
+  }
+  title
+  body
+  tags {
+    id
+    name
+  }
+  difficulty
+  createdAt
+  isPublic
+}

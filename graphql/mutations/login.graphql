@@ -1,0 +1,9 @@
+mutation Login($idToken: String!, $name: String!) {
+  login(idToken: $idToken, name: $name) {
+    errors {
+      ...RegularError
+    }
+    isNewUser
+    accessToken
+  }
+}
