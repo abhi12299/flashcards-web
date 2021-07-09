@@ -3,12 +3,8 @@ import { useEffect } from "react";
 import { useMeQuery } from "../generated/graphql";
 
 // redirect user to some other route if not logged in
-export const useIsAuthRequired = (
-  route: string = "/",
-  ssr: boolean = false
-) => {
-  const { data, loading } = useMeQuery({ ssr });
-  console.log("fetching?????");
+export const useIsAuthRequired = (route: string = "/") => {
+  const { data, loading } = useMeQuery();
   const router = useRouter();
 
   useEffect(() => {

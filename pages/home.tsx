@@ -6,7 +6,7 @@ import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
 
 const Home: React.FC = () => {
-  const { loading } = useIsAuthRequired('/', true)
+  const { loading } = useIsAuthRequired('/')
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
 

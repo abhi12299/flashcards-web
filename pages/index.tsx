@@ -1,13 +1,18 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
-import { MeDocument, useLoginMutation } from '../generated/graphql'
+import { useLoginMutation } from '../generated/graphql'
 import { useIsAuthNotRequired } from '../hooks/useIsAuthNotRequired'
 import firebase from '../init/firebase'
 import styles from '../styles/Home.module.css'
 import { withApollo } from '../utils/withApollo'
 
 function Home() {
-  const { loading } = useIsAuthNotRequired('/home', false)
+  const { query } = useRouter()
+
+  const nextRoute = query.next ? query.next as string : '/home'
+
+  const { loading, refetch: refetchMeQuery } = useIsAuthNotRequired(nextRoute)
   const [login] = useLoginMutation()
   const [_, setTokenCookie] = useCookies(['token'])
 
@@ -27,14 +32,13 @@ function Home() {
         variables: {
           idToken,
           name: user.displayName || ''
-        },
-        refetchQueries: [{ query: MeDocument }]
+        }
       })
       if (response.data?.login.errors) {
         console.error(response.data.login.errors)
       } else {
         setTokenCookie('token', response.data?.login.accessToken!)
-        // localStorage.setItem('token', response.data?.login.accessToken!)
+        refetchMeQuery()
       }
     } catch (error) {
       console.error(error)
