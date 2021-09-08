@@ -201,7 +201,7 @@ export type PaginatedFlashcardsHistory = {
 
 export type Query = {
   __typename?: 'Query';
-  publicFlashcards: PaginatedFlashcards;
+  flashcardsFeed: PaginatedFlashcards;
   userFlashcards: PaginatedFlashcards;
   flashcard?: Maybe<Flashcard>;
   flashcardsReport: FlashcardReportResponse;
@@ -213,7 +213,7 @@ export type Query = {
 };
 
 
-export type QueryPublicFlashcardsArgs = {
+export type QueryFlashcardsFeedArgs = {
   input: GetFlashcardsInput;
 };
 
@@ -306,6 +306,18 @@ export type UserResponse = {
   accessToken?: Maybe<Scalars['String']>;
 };
 
+export type FlashcardMinimalFragment = (
+  { __typename?: 'Flashcard' }
+  & Pick<Flashcard, 'id' | 'isFork' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
+  & { creator: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'profilePic'>
+  ), tags: Array<(
+    { __typename?: 'Tag' }
+    & Pick<Tag, 'id' | 'name'>
+  )> }
+);
+
 export type RegularErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
@@ -316,16 +328,27 @@ export type RegularUserFragment = (
   & Pick<User, 'id' | 'name' | 'email' | 'profilePic'>
 );
 
-export type UserFlashcardMinimalFragment = (
-  { __typename?: 'Flashcard' }
-  & Pick<Flashcard, 'id' | 'isFork' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
-  & { creator: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'profilePic'>
-  ), tags: Array<(
-    { __typename?: 'Tag' }
-    & Pick<Tag, 'id' | 'name'>
-  )> }
+export type CreateFlashcardMutationVariables = Exact<{
+  title: Scalars['String'];
+  body: Scalars['String'];
+  tags: Array<Scalars['String']> | Scalars['String'];
+  difficulty: Difficulty;
+  isPublic: Scalars['Boolean'];
+}>;
+
+
+export type CreateFlashcardMutation = (
+  { __typename?: 'Mutation' }
+  & { createFlashcard: (
+    { __typename?: 'CreateFlashcardResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, flashcard?: Maybe<(
+      { __typename?: 'Flashcard' }
+      & Pick<Flashcard, 'id'>
+    )> }
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -343,6 +366,27 @@ export type LoginMutation = (
       { __typename?: 'FieldError' }
       & RegularErrorFragment
     )>> }
+  ) }
+);
+
+export type FlashcardsFeedQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  difficulty?: Maybe<Difficulty>;
+  creatorId?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type FlashcardsFeedQuery = (
+  { __typename?: 'Query' }
+  & { flashcardsFeed: (
+    { __typename?: 'PaginatedFlashcards' }
+    & Pick<PaginatedFlashcards, 'hasMore' | 'total'>
+    & { flashcards: Array<(
+      { __typename?: 'Flashcard' }
+      & FlashcardMinimalFragment
+    )> }
   ) }
 );
 
@@ -374,27 +418,13 @@ export type UserFlashcardsQuery = (
     & Pick<PaginatedFlashcards, 'hasMore'>
     & { flashcards: Array<(
       { __typename?: 'Flashcard' }
-      & UserFlashcardMinimalFragment
+      & FlashcardMinimalFragment
     )> }
   ) }
 );
 
-export const RegularErrorFragmentDoc = gql`
-    fragment RegularError on FieldError {
-  field
-  message
-}
-    `;
-export const RegularUserFragmentDoc = gql`
-    fragment RegularUser on User {
-  id
-  name
-  email
-  profilePic
-}
-    `;
-export const UserFlashcardMinimalFragmentDoc = gql`
-    fragment UserFlashcardMinimal on Flashcard {
+export const FlashcardMinimalFragmentDoc = gql`
+    fragment FlashcardMinimal on Flashcard {
   id
   isFork
   creator {
@@ -413,6 +443,64 @@ export const UserFlashcardMinimalFragmentDoc = gql`
   isPublic
 }
     `;
+export const RegularErrorFragmentDoc = gql`
+    fragment RegularError on FieldError {
+  field
+  message
+}
+    `;
+export const RegularUserFragmentDoc = gql`
+    fragment RegularUser on User {
+  id
+  name
+  email
+  profilePic
+}
+    `;
+export const CreateFlashcardDocument = gql`
+    mutation CreateFlashcard($title: String!, $body: String!, $tags: [String!]!, $difficulty: Difficulty!, $isPublic: Boolean!) {
+  createFlashcard(
+    input: {title: $title, body: $body, tags: $tags, difficulty: $difficulty, isPublic: $isPublic}
+  ) {
+    errors {
+      ...RegularError
+    }
+    flashcard {
+      id
+    }
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type CreateFlashcardMutationFn = Apollo.MutationFunction<CreateFlashcardMutation, CreateFlashcardMutationVariables>;
+
+/**
+ * __useCreateFlashcardMutation__
+ *
+ * To run a mutation, you first call `useCreateFlashcardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFlashcardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFlashcardMutation, { data, loading, error }] = useCreateFlashcardMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      body: // value for 'body'
+ *      tags: // value for 'tags'
+ *      difficulty: // value for 'difficulty'
+ *      isPublic: // value for 'isPublic'
+ *   },
+ * });
+ */
+export function useCreateFlashcardMutation(baseOptions?: Apollo.MutationHookOptions<CreateFlashcardMutation, CreateFlashcardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateFlashcardMutation, CreateFlashcardMutationVariables>(CreateFlashcardDocument, options);
+      }
+export type CreateFlashcardMutationHookResult = ReturnType<typeof useCreateFlashcardMutation>;
+export type CreateFlashcardMutationResult = Apollo.MutationResult<CreateFlashcardMutation>;
+export type CreateFlashcardMutationOptions = Apollo.BaseMutationOptions<CreateFlashcardMutation, CreateFlashcardMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($idToken: String!, $name: String!) {
   login(idToken: $idToken, name: $name) {
@@ -451,6 +539,51 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const FlashcardsFeedDocument = gql`
+    query FlashcardsFeed($limit: Int!, $cursor: String, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+  flashcardsFeed(
+    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId}
+  ) {
+    hasMore
+    total
+    flashcards {
+      ...FlashcardMinimal
+    }
+  }
+}
+    ${FlashcardMinimalFragmentDoc}`;
+
+/**
+ * __useFlashcardsFeedQuery__
+ *
+ * To run a query within a React component, call `useFlashcardsFeedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFlashcardsFeedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFlashcardsFeedQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *      tags: // value for 'tags'
+ *      difficulty: // value for 'difficulty'
+ *      creatorId: // value for 'creatorId'
+ *   },
+ * });
+ */
+export function useFlashcardsFeedQuery(baseOptions: Apollo.QueryHookOptions<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>(FlashcardsFeedDocument, options);
+      }
+export function useFlashcardsFeedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>(FlashcardsFeedDocument, options);
+        }
+export type FlashcardsFeedQueryHookResult = ReturnType<typeof useFlashcardsFeedQuery>;
+export type FlashcardsFeedLazyQueryHookResult = ReturnType<typeof useFlashcardsFeedLazyQuery>;
+export type FlashcardsFeedQueryResult = Apollo.QueryResult<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -494,11 +627,11 @@ export const UserFlashcardsDocument = gql`
   ) {
     hasMore
     flashcards {
-      ...UserFlashcardMinimal
+      ...FlashcardMinimal
     }
   }
 }
-    ${UserFlashcardMinimalFragmentDoc}`;
+    ${FlashcardMinimalFragmentDoc}`;
 
 /**
  * __useUserFlashcardsQuery__

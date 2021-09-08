@@ -1,11 +1,11 @@
-query UserFlashcards(
+query FlashcardsFeed(
   $limit: Int!
   $cursor: String
   $tags: [String!]
   $difficulty: Difficulty
   $creatorId: Int
 ) {
-  userFlashcards(
+  flashcardsFeed(
     input: {
       limit: $limit
       cursor: $cursor
@@ -15,6 +15,7 @@ query UserFlashcards(
     }
   ) {
     hasMore
+    total
     flashcards {
       ...FlashcardMinimal
     }

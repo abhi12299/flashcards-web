@@ -1,0 +1,24 @@
+mutation CreateFlashcard(
+  $title: String!
+  $body: String!
+  $tags: [String!]!
+  $difficulty: Difficulty!
+  $isPublic: Boolean!
+) {
+  createFlashcard(
+    input: {
+      title: $title
+      body: $body
+      tags: $tags
+      difficulty: $difficulty
+      isPublic: $isPublic
+    }
+  ) {
+    errors {
+      ...RegularError
+    }
+    flashcard {
+      id
+    }
+  }
+}

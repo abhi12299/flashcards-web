@@ -16,6 +16,7 @@
     "apollo-link-timeout": "^4.0.0",
     "cookie": "^0.4.1",
     "firebase": "^8.6.8",
+    "formik": "^2.2.9",
     "graphql": "^15.5.1",
     "javascript-time-ago": "^2.3.7",
     "next": "11.0.1",

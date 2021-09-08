@@ -1,4 +1,4 @@
-fragment UserFlashcardMinimal on Flashcard {
+fragment FlashcardMinimal on Flashcard {
   id
   isFork
   creator {
