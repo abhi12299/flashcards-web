@@ -1,24 +1,37 @@
 import { useApolloClient } from '@apollo/client'
 import Link from 'next/link'
-import React from 'react'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
 import { useCookies } from 'react-cookie'
-import { useFlashcardsFeedQuery } from '../generated/graphql'
+import { useFlashcardsFeedLazyQuery } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
 
 const Home: React.FC = () => {
-  const { loading: authChecking } = useIsAuthRequired('/')
+  const { query, isReady } = useRouter()
+  const { loading: authChecking } = useIsAuthRequired()
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
-
-  const { data, error, loading: fetching, fetchMore, variables } = useFlashcardsFeedQuery({
-    variables: {
-      limit: 10,
-      cursor: null,
-    },
+  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery({
     notifyOnNetworkStatusChange: true
   })
+
+  useEffect(() => {
+    if (!isReady) return
+
+    let { tags } = query
+    if (typeof tags === 'string') {
+      tags = [tags]
+    }
+    console.log({ tags })
+    getFlashcardsFeed({
+      variables: {
+        limit: 10,
+        tags
+      }
+    })
+  }, [getFlashcardsFeed, isReady, query])
 
   const handleLogout = async () => {
     try {
@@ -32,13 +45,13 @@ const Home: React.FC = () => {
 
   let pageContent: JSX.Element | null = null
 
-  if (!fetching && !data) {
+  if (error) {
     pageContent = (
       <div>
         Something aint right!
       </div>
     )
-  } else if (fetching) {
+  } else if (fetching || !isReady) {
     pageContent = (
       <div>Loading...</div>
     )
@@ -47,7 +60,7 @@ const Home: React.FC = () => {
       <div>No data!</div>
     )
   } else {
-    console.log(data.flashcardsFeed.flashcards)
+    // console.log(data.flashcardsFeed.flashcards)
     pageContent = (
       <>
         Total: {data.flashcardsFeed.total}

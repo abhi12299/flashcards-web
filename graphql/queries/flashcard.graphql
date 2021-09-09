@@ -1,0 +1,23 @@
+query Flashcard($id: Int!) {
+  flashcard(id: $id) {
+    title
+    body
+    isPublic
+    isForkedByYou
+    difficulty
+    tags {
+      name
+    }
+    status
+    stats {
+      avgTime
+      numAttempts
+      lastSeenOn
+    }
+    creator {
+      name
+      profilePic
+      id
+    }
+  }
+}

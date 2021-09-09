@@ -1,0 +1,12 @@
+mutation RespondToFlashcard(
+  $id: Int!
+  $type: FlashcardStatus!
+  $duration: Float
+) {
+  respondToFlashcard(input: { id: $id, type: $type, duration: $duration }) {
+    errors {
+      ...RegularError
+    }
+    done
+  }
+}

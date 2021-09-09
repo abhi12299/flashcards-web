@@ -369,6 +369,48 @@ export type LoginMutation = (
   ) }
 );
 
+export type RespondToFlashcardMutationVariables = Exact<{
+  id: Scalars['Int'];
+  type: FlashcardStatus;
+  duration?: Maybe<Scalars['Float']>;
+}>;
+
+
+export type RespondToFlashcardMutation = (
+  { __typename?: 'Mutation' }
+  & { respondToFlashcard: (
+    { __typename?: 'RespondToFlashcardResponse' }
+    & Pick<RespondToFlashcardResponse, 'done'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>> }
+  ) }
+);
+
+export type FlashcardQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type FlashcardQuery = (
+  { __typename?: 'Query' }
+  & { flashcard?: Maybe<(
+    { __typename?: 'Flashcard' }
+    & Pick<Flashcard, 'title' | 'body' | 'isPublic' | 'isForkedByYou' | 'difficulty' | 'status'>
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & Pick<Tag, 'name'>
+    )>, stats?: Maybe<(
+      { __typename?: 'FlashcardStats' }
+      & Pick<FlashcardStats, 'avgTime' | 'numAttempts' | 'lastSeenOn'>
+    )>, creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'name' | 'profilePic' | 'id'>
+    ) }
+  )> }
+);
+
 export type FlashcardsFeedQueryVariables = Exact<{
   limit: Scalars['Int'];
   cursor?: Maybe<Scalars['String']>;
@@ -539,6 +581,97 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const RespondToFlashcardDocument = gql`
+    mutation RespondToFlashcard($id: Int!, $type: FlashcardStatus!, $duration: Float) {
+  respondToFlashcard(input: {id: $id, type: $type, duration: $duration}) {
+    errors {
+      ...RegularError
+    }
+    done
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type RespondToFlashcardMutationFn = Apollo.MutationFunction<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>;
+
+/**
+ * __useRespondToFlashcardMutation__
+ *
+ * To run a mutation, you first call `useRespondToFlashcardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRespondToFlashcardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [respondToFlashcardMutation, { data, loading, error }] = useRespondToFlashcardMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      type: // value for 'type'
+ *      duration: // value for 'duration'
+ *   },
+ * });
+ */
+export function useRespondToFlashcardMutation(baseOptions?: Apollo.MutationHookOptions<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>(RespondToFlashcardDocument, options);
+      }
+export type RespondToFlashcardMutationHookResult = ReturnType<typeof useRespondToFlashcardMutation>;
+export type RespondToFlashcardMutationResult = Apollo.MutationResult<RespondToFlashcardMutation>;
+export type RespondToFlashcardMutationOptions = Apollo.BaseMutationOptions<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>;
+export const FlashcardDocument = gql`
+    query Flashcard($id: Int!) {
+  flashcard(id: $id) {
+    title
+    body
+    isPublic
+    isForkedByYou
+    difficulty
+    tags {
+      name
+    }
+    status
+    stats {
+      avgTime
+      numAttempts
+      lastSeenOn
+    }
+    creator {
+      name
+      profilePic
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useFlashcardQuery__
+ *
+ * To run a query within a React component, call `useFlashcardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFlashcardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFlashcardQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useFlashcardQuery(baseOptions: Apollo.QueryHookOptions<FlashcardQuery, FlashcardQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FlashcardQuery, FlashcardQueryVariables>(FlashcardDocument, options);
+      }
+export function useFlashcardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FlashcardQuery, FlashcardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FlashcardQuery, FlashcardQueryVariables>(FlashcardDocument, options);
+        }
+export type FlashcardQueryHookResult = ReturnType<typeof useFlashcardQuery>;
+export type FlashcardLazyQueryHookResult = ReturnType<typeof useFlashcardLazyQuery>;
+export type FlashcardQueryResult = Apollo.QueryResult<FlashcardQuery, FlashcardQueryVariables>;
 export const FlashcardsFeedDocument = gql`
     query FlashcardsFeed($limit: Int!, $cursor: String, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
   flashcardsFeed(
