@@ -25,7 +25,7 @@ const createClient = (ctx: NextPageContext) => {
     return {
       headers: {
         ...headers,
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     };
   });

@@ -67,8 +67,8 @@ const Home: React.FC = () => {
         HasMore: {data.flashcardsFeed.hasMore ? 'Yes' : 'No'}
         {
           data.flashcardsFeed.flashcards.map(f => (
-            <div key={f.id}>
-              <Link href={`/flashcard/${f.id}`}>
+            <div key={f.randId}>
+              <Link href={`/flashcard/${f.randId}`}>
                 <a>
                   {f.title}
                   <br />

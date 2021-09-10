@@ -1,9 +1,11 @@
 mutation RespondToFlashcard(
-  $id: Int!
+  $randId: String!
   $type: FlashcardStatus!
   $duration: Float
 ) {
-  respondToFlashcard(input: { id: $id, type: $type, duration: $duration }) {
+  respondToFlashcard(
+    input: { randId: $randId, type: $type, duration: $duration }
+  ) {
     errors {
       ...RegularError
     }

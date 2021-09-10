@@ -1,8 +1,8 @@
 fragment FlashcardMinimal on Flashcard {
-  id
+  randId
   isFork
   creator {
-    id
+    username
     name
     profilePic
   }

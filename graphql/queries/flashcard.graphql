@@ -1,5 +1,5 @@
-query Flashcard($id: Int!) {
-  flashcard(id: $id) {
+query Flashcard($randId: String!) {
+  flashcard(randId: $randId) {
     title
     body
     isPublic
@@ -17,7 +17,7 @@ query Flashcard($id: Int!) {
     creator {
       name
       profilePic
-      id
+      username
     }
   }
 }

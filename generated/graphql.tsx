@@ -46,14 +46,13 @@ export type FieldError = {
 
 export type Flashcard = {
   __typename?: 'Flashcard';
-  id: Scalars['Float'];
+  randId: Scalars['String'];
   title: Scalars['String'];
   body: Scalars['String'];
   isPublic: Scalars['Boolean'];
   isFork: Scalars['Boolean'];
   difficulty: Difficulty;
   tags: Array<Tag>;
-  creatorId: Scalars['Float'];
   creator: User;
   createdAt: Scalars['Float'];
   updatedAt: Scalars['Float'];
@@ -162,12 +161,12 @@ export type MutationUpdateFlashcardArgs = {
 
 
 export type MutationDeleteFlashcardArgs = {
-  id: Scalars['Int'];
+  randId: Scalars['String'];
 };
 
 
 export type MutationForkFlashcardArgs = {
-  from: Scalars['Int'];
+  from: Scalars['String'];
 };
 
 
@@ -224,7 +223,7 @@ export type QueryUserFlashcardsArgs = {
 
 
 export type QueryFlashcardArgs = {
-  id: Scalars['Int'];
+  randId: Scalars['String'];
 };
 
 
@@ -250,7 +249,7 @@ export enum ReportTimespan {
 }
 
 export type RespondToFlashcardInput = {
-  id: Scalars['Int'];
+  randId: Scalars['String'];
   type: FlashcardStatus;
   duration?: Maybe<Scalars['Float']>;
 };
@@ -270,7 +269,7 @@ export type Tag = {
 };
 
 export type UpdateFlashcardInput = {
-  id: Scalars['Int'];
+  randId: Scalars['String'];
   title?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   tags?: Maybe<Array<Scalars['String']>>;
@@ -290,9 +289,9 @@ export type UpdateUserProfileInput = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['Float'];
   name: Scalars['String'];
   email: Scalars['String'];
+  username: Scalars['String'];
   profilePic: Scalars['String'];
   createdAt: Scalars['Float'];
   updatedAt: Scalars['Float'];
@@ -308,10 +307,10 @@ export type UserResponse = {
 
 export type FlashcardMinimalFragment = (
   { __typename?: 'Flashcard' }
-  & Pick<Flashcard, 'id' | 'isFork' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
+  & Pick<Flashcard, 'randId' | 'isFork' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
   & { creator: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'profilePic'>
+    & Pick<User, 'username' | 'name' | 'profilePic'>
   ), tags: Array<(
     { __typename?: 'Tag' }
     & Pick<Tag, 'id' | 'name'>
@@ -325,7 +324,7 @@ export type RegularErrorFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'name' | 'email' | 'profilePic'>
+  & Pick<User, 'username' | 'name' | 'email' | 'profilePic'>
 );
 
 export type CreateFlashcardMutationVariables = Exact<{
@@ -346,7 +345,7 @@ export type CreateFlashcardMutation = (
       & RegularErrorFragment
     )>>, flashcard?: Maybe<(
       { __typename?: 'Flashcard' }
-      & Pick<Flashcard, 'id'>
+      & Pick<Flashcard, 'randId'>
     )> }
   ) }
 );
@@ -370,7 +369,7 @@ export type LoginMutation = (
 );
 
 export type RespondToFlashcardMutationVariables = Exact<{
-  id: Scalars['Int'];
+  randId: Scalars['String'];
   type: FlashcardStatus;
   duration?: Maybe<Scalars['Float']>;
 }>;
@@ -389,7 +388,7 @@ export type RespondToFlashcardMutation = (
 );
 
 export type FlashcardQueryVariables = Exact<{
-  id: Scalars['Int'];
+  randId: Scalars['String'];
 }>;
 
 
@@ -406,7 +405,7 @@ export type FlashcardQuery = (
       & Pick<FlashcardStats, 'avgTime' | 'numAttempts' | 'lastSeenOn'>
     )>, creator: (
       { __typename?: 'User' }
-      & Pick<User, 'name' | 'profilePic' | 'id'>
+      & Pick<User, 'name' | 'profilePic' | 'username'>
     ) }
   )> }
 );
@@ -467,10 +466,10 @@ export type UserFlashcardsQuery = (
 
 export const FlashcardMinimalFragmentDoc = gql`
     fragment FlashcardMinimal on Flashcard {
-  id
+  randId
   isFork
   creator {
-    id
+    username
     name
     profilePic
   }
@@ -493,7 +492,7 @@ export const RegularErrorFragmentDoc = gql`
     `;
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
-  id
+  username
   name
   email
   profilePic
@@ -508,7 +507,7 @@ export const CreateFlashcardDocument = gql`
       ...RegularError
     }
     flashcard {
-      id
+      randId
     }
   }
 }
@@ -582,8 +581,8 @@ export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const RespondToFlashcardDocument = gql`
-    mutation RespondToFlashcard($id: Int!, $type: FlashcardStatus!, $duration: Float) {
-  respondToFlashcard(input: {id: $id, type: $type, duration: $duration}) {
+    mutation RespondToFlashcard($randId: String!, $type: FlashcardStatus!, $duration: Float) {
+  respondToFlashcard(input: {randId: $randId, type: $type, duration: $duration}) {
     errors {
       ...RegularError
     }
@@ -606,7 +605,7 @@ export type RespondToFlashcardMutationFn = Apollo.MutationFunction<RespondToFlas
  * @example
  * const [respondToFlashcardMutation, { data, loading, error }] = useRespondToFlashcardMutation({
  *   variables: {
- *      id: // value for 'id'
+ *      randId: // value for 'randId'
  *      type: // value for 'type'
  *      duration: // value for 'duration'
  *   },
@@ -620,8 +619,8 @@ export type RespondToFlashcardMutationHookResult = ReturnType<typeof useRespondT
 export type RespondToFlashcardMutationResult = Apollo.MutationResult<RespondToFlashcardMutation>;
 export type RespondToFlashcardMutationOptions = Apollo.BaseMutationOptions<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>;
 export const FlashcardDocument = gql`
-    query Flashcard($id: Int!) {
-  flashcard(id: $id) {
+    query Flashcard($randId: String!) {
+  flashcard(randId: $randId) {
     title
     body
     isPublic
@@ -639,7 +638,7 @@ export const FlashcardDocument = gql`
     creator {
       name
       profilePic
-      id
+      username
     }
   }
 }
@@ -657,7 +656,7 @@ export const FlashcardDocument = gql`
  * @example
  * const { data, loading, error } = useFlashcardQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      randId: // value for 'randId'
  *   },
  * });
  */

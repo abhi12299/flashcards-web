@@ -14,9 +14,8 @@ const FlashcardPage: React.FC = () => {
   const [respondToFlashcard, { loading: responding, called: responded }] = useRespondToFlashcardMutation()
 
   useEffect(() => {
-    const numId = id ? +id : NaN
-    if (!isNaN(numId) && !loading) {
-      getFlashcard({ variables: { id: numId } })
+    if (typeof id === 'string' && !loading) {
+      getFlashcard({ variables: { randId: id } })
     }
   }, [id, getFlashcard, loading])
 
@@ -32,7 +31,7 @@ const FlashcardPage: React.FC = () => {
     const duration = timer.current ? Date.now() - timer.current : 0
     respondToFlashcard({
       variables: {
-        id: +id!,
+        randId: id as string,
         type,
         duration
       }

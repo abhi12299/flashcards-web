@@ -22,7 +22,7 @@ export const createApolloClient = () => {
     return {
       headers: {
         ...headers,
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     };
   });
