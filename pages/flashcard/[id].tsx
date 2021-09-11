@@ -10,14 +10,16 @@ const FlashcardPage: React.FC = () => {
   const timer = useRef(0)
   const { loading: authChecking } = useIsAuthRequired()
 
-  const [getFlashcard, { loading, error, data }] = useFlashcardLazyQuery()
+  const [getFlashcard, { loading, error, data }] = useFlashcardLazyQuery({
+    fetchPolicy: 'network-only'
+  })
   const [respondToFlashcard, { loading: responding, called: responded }] = useRespondToFlashcardMutation()
 
   useEffect(() => {
-    if (typeof id === 'string' && !loading) {
+    if (typeof id === 'string' && !loading && !data) {
       getFlashcard({ variables: { randId: id } })
     }
-  }, [id, getFlashcard, loading])
+  }, [id, getFlashcard, loading, data])
 
   useEffect(() => {
     if (data && data.flashcard) {
@@ -64,12 +66,15 @@ const FlashcardPage: React.FC = () => {
 
   return (
     <div>
+      <Link href="/feed">
+        <a>Go home</a>
+      </Link>
       <h3>{data.flashcard.title}</h3>
       <p>By: {data.flashcard.creator.name}</p>
       <p>Difficulty: {data.flashcard.difficulty}</p>
       <p>
         Tags: {data.flashcard.tags.map(t => (
-          <Link key={t.name} href={`/home?tags=${t.name}`}>
+          <Link key={t.name} href={`/feed?tags=${t.name}`}>
             <a>#{t.name}
             </a>
           </Link>
@@ -93,7 +98,7 @@ const FlashcardPage: React.FC = () => {
             <>
               <p>Average time taken: {data.flashcard.stats.avgTime}</p>
               <p>Number of previous attempts: {data.flashcard.stats.numAttempts}</p>
-              <p>Last responded at: {data.flashcard.stats.lastSeenOn}</p>
+              <p>Last responded at: {new Date(data.flashcard.stats.lastSeenOn).toLocaleString()}</p>
             </>
           }
         </div>

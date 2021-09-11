@@ -1,7 +1,7 @@
 import { useApolloClient } from '@apollo/client'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import { useFlashcardsFeedLazyQuery } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
@@ -9,12 +9,15 @@ import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
 
 const Home: React.FC = () => {
-  const { query, isReady } = useRouter()
-  const { loading: authChecking } = useIsAuthRequired()
+  const { query, isReady, push, replace } = useRouter()
+  const [tags, setTags] = useState<string[]>([])
+
+  const { data: meData, loading: authChecking } = useIsAuthRequired()
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
   const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery({
-    notifyOnNetworkStatusChange: true
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
@@ -22,16 +25,36 @@ const Home: React.FC = () => {
 
     let { tags } = query
     if (typeof tags === 'string') {
-      tags = [tags]
+      tags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0)
+    } else {
+      tags = []
     }
-    console.log({ tags })
+    setTags(tags)
+  }, [isReady])
+
+  useEffect(() => {
+    if (tags.length > 0) {
+      // update query param
+      replace({
+        query: {
+          ...query,
+          tags: `${tags.join(',')}`
+        }
+      })
+    }
+  }, [tags])
+
+  useEffect(() => {
+    if (!isReady) return
+
+    console.log('tags are', tags)
     getFlashcardsFeed({
       variables: {
         limit: 10,
-        tags
+        tags: tags.length > 0 ? tags : undefined
       }
     })
-  }, [getFlashcardsFeed, isReady, query])
+  }, [getFlashcardsFeed, isReady, query, tags])
 
   const handleLogout = async () => {
     try {
@@ -63,6 +86,7 @@ const Home: React.FC = () => {
     // console.log(data.flashcardsFeed.flashcards)
     pageContent = (
       <>
+        {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
         Total: {data.flashcardsFeed.total}
         HasMore: {data.flashcardsFeed.hasMore ? 'Yes' : 'No'}
         {
@@ -79,6 +103,12 @@ const Home: React.FC = () => {
                   {f.createdAt}
                 </a>
               </Link>
+              {
+                f.creator.username === meData?.me?.username &&
+                <>
+                  <button onClick={() => push(`/flashcard/edit/${f.randId}`)}>Edit</button>
+                </>
+              }
             </div>
           ))
         }

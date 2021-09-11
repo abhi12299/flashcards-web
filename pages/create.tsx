@@ -64,7 +64,6 @@ const CreateFlashcard: React.FC = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <input
-          id="title"
           name="title"
           type="text"
           placeholder="Title"
@@ -76,7 +75,6 @@ const CreateFlashcard: React.FC = () => {
         {errors.title && <p>{errors.title}</p>}
         <br />
         <textarea
-          id="body"
           name="body"
           placeholder="Write something you want to remember..."
           value={values.body}
@@ -88,7 +86,6 @@ const CreateFlashcard: React.FC = () => {
         <br />
         {/* use https://primefaces.org/primereact/showcase/#/mention */}
         <input
-          id="tags"
           placeholder="Add some tags..."
           type="text"
           onChange={(e) => {

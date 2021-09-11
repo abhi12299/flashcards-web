@@ -387,6 +387,27 @@ export type RespondToFlashcardMutation = (
   ) }
 );
 
+export type UpdateFlashcardMutationVariables = Exact<{
+  randId: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
+  body?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  isPublic?: Maybe<Scalars['Boolean']>;
+  difficulty?: Maybe<Difficulty>;
+}>;
+
+
+export type UpdateFlashcardMutation = (
+  { __typename?: 'Mutation' }
+  & { updateFlashcard: (
+    { __typename?: 'UpdateFlashcardResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>> }
+  ) }
+);
+
 export type FlashcardQueryVariables = Exact<{
   randId: Scalars['String'];
 }>;
@@ -618,6 +639,48 @@ export function useRespondToFlashcardMutation(baseOptions?: Apollo.MutationHookO
 export type RespondToFlashcardMutationHookResult = ReturnType<typeof useRespondToFlashcardMutation>;
 export type RespondToFlashcardMutationResult = Apollo.MutationResult<RespondToFlashcardMutation>;
 export type RespondToFlashcardMutationOptions = Apollo.BaseMutationOptions<RespondToFlashcardMutation, RespondToFlashcardMutationVariables>;
+export const UpdateFlashcardDocument = gql`
+    mutation UpdateFlashcard($randId: String!, $title: String, $body: String, $tags: [String!], $isPublic: Boolean, $difficulty: Difficulty) {
+  updateFlashcard(
+    input: {randId: $randId, title: $title, body: $body, tags: $tags, isPublic: $isPublic, difficulty: $difficulty}
+  ) {
+    errors {
+      ...RegularError
+    }
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type UpdateFlashcardMutationFn = Apollo.MutationFunction<UpdateFlashcardMutation, UpdateFlashcardMutationVariables>;
+
+/**
+ * __useUpdateFlashcardMutation__
+ *
+ * To run a mutation, you first call `useUpdateFlashcardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFlashcardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateFlashcardMutation, { data, loading, error }] = useUpdateFlashcardMutation({
+ *   variables: {
+ *      randId: // value for 'randId'
+ *      title: // value for 'title'
+ *      body: // value for 'body'
+ *      tags: // value for 'tags'
+ *      isPublic: // value for 'isPublic'
+ *      difficulty: // value for 'difficulty'
+ *   },
+ * });
+ */
+export function useUpdateFlashcardMutation(baseOptions?: Apollo.MutationHookOptions<UpdateFlashcardMutation, UpdateFlashcardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateFlashcardMutation, UpdateFlashcardMutationVariables>(UpdateFlashcardDocument, options);
+      }
+export type UpdateFlashcardMutationHookResult = ReturnType<typeof useUpdateFlashcardMutation>;
+export type UpdateFlashcardMutationResult = Apollo.MutationResult<UpdateFlashcardMutation>;
+export type UpdateFlashcardMutationOptions = Apollo.BaseMutationOptions<UpdateFlashcardMutation, UpdateFlashcardMutationVariables>;
 export const FlashcardDocument = gql`
     query Flashcard($randId: String!) {
   flashcard(randId: $randId) {

@@ -1,0 +1,23 @@
+mutation UpdateFlashcard(
+  $randId: String!
+  $title: String
+  $body: String
+  $tags: [String!]
+  $isPublic: Boolean
+  $difficulty: Difficulty
+) {
+  updateFlashcard(
+    input: {
+      randId: $randId
+      title: $title
+      body: $body
+      tags: $tags
+      isPublic: $isPublic
+      difficulty: $difficulty
+    }
+  ) {
+    errors {
+      ...RegularError
+    }
+  }
+}
