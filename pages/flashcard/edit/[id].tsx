@@ -1,17 +1,18 @@
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { Difficulty, FlashcardDocument, FlashcardsFeedDocument, useFlashcardLazyQuery, useUpdateFlashcardMutation } from '../../../generated/graphql'
+import { Difficulty, FlashcardDocument, useDeleteFlashcardMutation, useFlashcardLazyQuery, useUpdateFlashcardMutation } from '../../../generated/graphql'
 import { useIsAuthRequired } from '../../../hooks/useIsAuthRequired'
 import { withApollo } from '../../../utils/withApollo'
 
 const FlashcardPage: React.FC = () => {
-  const { query: { id }, push } = useRouter()
-  const { loading: authChecking } = useIsAuthRequired()
+  const { query: { id }, push, back } = useRouter()
+  const { loading: authChecking, data: meData } = useIsAuthRequired()
   const [tags, setTags] = useState<string[]>([])
   const difficultyValues: Difficulty[] = [Difficulty.Easy, Difficulty.Medium, Difficulty.Hard]
 
   const [getFlashcard, { loading, error, data }] = useFlashcardLazyQuery()
+  const [deleteFlashcard, { loading: deleting }] = useDeleteFlashcardMutation()
   const [updateFlashcard, { loading: updating }] = useUpdateFlashcardMutation({
     refetchQueries: [
       {
@@ -19,15 +20,32 @@ const FlashcardPage: React.FC = () => {
         variables: {
           randId: id
         }
-      },
-      {
-        query: FlashcardsFeedDocument,
-        variables: {
-          limit: 10
-        }
       }
     ]
   })
+
+  const handleDelete = async () => {
+    if (deleting || !window.confirm('Are you sure?')) return
+    const { data, errors } = await deleteFlashcard({
+      variables: {
+        randId: id as string
+      },
+      update(cache) {
+        cache.evict({
+          fieldName: 'flashcard',
+          args: { randId: id }
+        })
+        cache.evict({
+          fieldName: 'flashcardsFeed {}'
+        })
+      }
+    })
+    if (errors || !data) {
+      console.error(errors)
+      return
+    }
+    back()
+  }
 
   useEffect(() => {
     if (data?.flashcard) {
@@ -65,6 +83,14 @@ const FlashcardPage: React.FC = () => {
     )
   }
 
+  if (data.flashcard.creator.username !== meData?.me?.username) {
+    // TODO: re-route to error page?
+    return (
+      <div>
+        Not authorized to view the page!
+      </div>
+    )
+  }
   return (
     <div>
       <h3>Edit flashcard</h3>
@@ -96,6 +122,11 @@ const FlashcardPage: React.FC = () => {
               difficulty: values.difficulty,
               isPublic: values.isPublic,
               tags: tags.filter(t => t.trim().length > 0)
+            },
+            update(cache) {
+              cache.evict({
+                fieldName: 'flashcardsFeed {}'
+              })
             }
           })
           if (errors || !data || data.updateFlashcard.errors) {
@@ -174,6 +205,7 @@ const FlashcardPage: React.FC = () => {
           )
         }}
       </Formik>
+      <button disabled={deleting} onClick={handleDelete}>Delete</button>
     </div>
   )
 }

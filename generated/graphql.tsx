@@ -206,8 +206,9 @@ export type Query = {
   flashcardsReport: FlashcardReportResponse;
   flashcardHistory: PaginatedFlashcardsHistory;
   hello: Scalars['String'];
-  myTags: Array<Tag>;
-  allTags: Array<Tag>;
+  myTopTags: Array<Tag>;
+  topTags: Array<Tag>;
+  searchTags: Array<Tag>;
   me?: Maybe<User>;
 };
 
@@ -236,6 +237,11 @@ export type QueryFlashcardHistoryArgs = {
   input: GetFlashcardsHistoryInput;
 };
 
+
+export type QuerySearchTagsArgs = {
+  input: SearchTagsInput;
+};
+
 /** Groups to be formed in reports */
 export enum ReportGroupBy {
   Difficulty = 'difficulty',
@@ -258,6 +264,10 @@ export type RespondToFlashcardResponse = {
   __typename?: 'RespondToFlashcardResponse';
   errors?: Maybe<Array<FieldError>>;
   done: Scalars['Boolean'];
+};
+
+export type SearchTagsInput = {
+  term: Scalars['String'];
 };
 
 export type Tag = {
@@ -348,6 +358,16 @@ export type CreateFlashcardMutation = (
       & Pick<Flashcard, 'randId'>
     )> }
   ) }
+);
+
+export type DeleteFlashcardMutationVariables = Exact<{
+  randId: Scalars['String'];
+}>;
+
+
+export type DeleteFlashcardMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteFlashcard'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -563,6 +583,37 @@ export function useCreateFlashcardMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateFlashcardMutationHookResult = ReturnType<typeof useCreateFlashcardMutation>;
 export type CreateFlashcardMutationResult = Apollo.MutationResult<CreateFlashcardMutation>;
 export type CreateFlashcardMutationOptions = Apollo.BaseMutationOptions<CreateFlashcardMutation, CreateFlashcardMutationVariables>;
+export const DeleteFlashcardDocument = gql`
+    mutation DeleteFlashcard($randId: String!) {
+  deleteFlashcard(randId: $randId)
+}
+    `;
+export type DeleteFlashcardMutationFn = Apollo.MutationFunction<DeleteFlashcardMutation, DeleteFlashcardMutationVariables>;
+
+/**
+ * __useDeleteFlashcardMutation__
+ *
+ * To run a mutation, you first call `useDeleteFlashcardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFlashcardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFlashcardMutation, { data, loading, error }] = useDeleteFlashcardMutation({
+ *   variables: {
+ *      randId: // value for 'randId'
+ *   },
+ * });
+ */
+export function useDeleteFlashcardMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFlashcardMutation, DeleteFlashcardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFlashcardMutation, DeleteFlashcardMutationVariables>(DeleteFlashcardDocument, options);
+      }
+export type DeleteFlashcardMutationHookResult = ReturnType<typeof useDeleteFlashcardMutation>;
+export type DeleteFlashcardMutationResult = Apollo.MutationResult<DeleteFlashcardMutation>;
+export type DeleteFlashcardMutationOptions = Apollo.BaseMutationOptions<DeleteFlashcardMutation, DeleteFlashcardMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($idToken: String!, $name: String!) {
   login(idToken: $idToken, name: $name) {
