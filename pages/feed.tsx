@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
-import { useFlashcardsFeedLazyQuery } from '../generated/graphql'
+import { useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
@@ -15,10 +15,8 @@ const Home: React.FC = () => {
   const { data: meData, loading: authChecking } = useIsAuthRequired()
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
-  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery({
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'network-only',
-  })
+  const [forkFlashcard, { loading: forking }] = useForkFlashcardMutation()
+  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery()
 
   useEffect(() => {
     if (!isReady) return
@@ -45,16 +43,14 @@ const Home: React.FC = () => {
   }, [tags])
 
   useEffect(() => {
-    if (!isReady) return
-
-    console.log('tags are', tags)
+    if (!isReady || authChecking || fetching || !meData?.me) return
     getFlashcardsFeed({
       variables: {
         limit: 10,
         tags: tags.length > 0 ? tags : undefined
       }
     })
-  }, [getFlashcardsFeed, isReady, query, tags])
+  }, [fetching, getFlashcardsFeed, isReady, query, tags, authChecking, meData])
 
   const handleLogout = async () => {
     try {
@@ -63,7 +59,22 @@ const Home: React.FC = () => {
       console.error(error)
     }
     removeTokenCookie('token')
-    apolloClient.resetStore()
+    apolloClient.clearStore()
+    push('/')
+  }
+
+  const handleFork = async (randId: string) => {
+    if (forking) return
+    const { errors, data } = await forkFlashcard({
+      variables: {
+        randId
+      }
+    })
+    if (data?.forkFlashcard.forkedId) {
+      push(`/flashcard/${data.forkFlashcard.forkedId}`)
+    } else {
+      console.error('cannot fork!', errors, data)
+    }
   }
 
   let pageContent: JSX.Element | null = null
@@ -107,6 +118,13 @@ const Home: React.FC = () => {
                 f.creator.username === meData?.me?.username &&
                 <>
                   <button onClick={() => push(`/flashcard/edit/${f.randId}`)}>Edit</button>
+                </>
+              }
+              {
+                f.creator.username !== meData?.me?.username &&
+                !f.isForkedByYou &&
+                <>
+                  <button onClick={() => handleFork(f.randId)}>Fork It!</button>
                 </>
               }
             </div>

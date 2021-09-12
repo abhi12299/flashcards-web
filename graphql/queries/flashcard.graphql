@@ -1,9 +1,11 @@
 query Flashcard($randId: String!) {
   flashcard(randId: $randId) {
+    randId
     title
     body
     isPublic
     isForkedByYou
+    isFork
     difficulty
     tags {
       name

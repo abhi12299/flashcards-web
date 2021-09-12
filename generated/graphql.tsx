@@ -122,7 +122,7 @@ export enum FlashcardVisibility {
 export type ForkFlashcardResponse = {
   __typename?: 'ForkFlashcardResponse';
   errors?: Maybe<Array<FieldError>>;
-  done: Scalars['Boolean'];
+  forkedId?: Maybe<Scalars['String']>;
 };
 
 export type GetFlashcardsHistoryInput = {
@@ -317,7 +317,7 @@ export type UserResponse = {
 
 export type FlashcardMinimalFragment = (
   { __typename?: 'Flashcard' }
-  & Pick<Flashcard, 'randId' | 'isFork' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
+  & Pick<Flashcard, 'randId' | 'isFork' | 'isForkedByYou' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'username' | 'name' | 'profilePic'>
@@ -368,6 +368,23 @@ export type DeleteFlashcardMutationVariables = Exact<{
 export type DeleteFlashcardMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteFlashcard'>
+);
+
+export type ForkFlashcardMutationVariables = Exact<{
+  randId: Scalars['String'];
+}>;
+
+
+export type ForkFlashcardMutation = (
+  { __typename?: 'Mutation' }
+  & { forkFlashcard: (
+    { __typename?: 'ForkFlashcardResponse' }
+    & Pick<ForkFlashcardResponse, 'forkedId'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>> }
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -437,7 +454,7 @@ export type FlashcardQuery = (
   { __typename?: 'Query' }
   & { flashcard?: Maybe<(
     { __typename?: 'Flashcard' }
-    & Pick<Flashcard, 'title' | 'body' | 'isPublic' | 'isForkedByYou' | 'difficulty' | 'status'>
+    & Pick<Flashcard, 'randId' | 'title' | 'body' | 'isPublic' | 'isForkedByYou' | 'isFork' | 'difficulty' | 'status'>
     & { tags: Array<(
       { __typename?: 'Tag' }
       & Pick<Tag, 'name'>
@@ -509,6 +526,7 @@ export const FlashcardMinimalFragmentDoc = gql`
     fragment FlashcardMinimal on Flashcard {
   randId
   isFork
+  isForkedByYou
   creator {
     username
     name
@@ -614,6 +632,42 @@ export function useDeleteFlashcardMutation(baseOptions?: Apollo.MutationHookOpti
 export type DeleteFlashcardMutationHookResult = ReturnType<typeof useDeleteFlashcardMutation>;
 export type DeleteFlashcardMutationResult = Apollo.MutationResult<DeleteFlashcardMutation>;
 export type DeleteFlashcardMutationOptions = Apollo.BaseMutationOptions<DeleteFlashcardMutation, DeleteFlashcardMutationVariables>;
+export const ForkFlashcardDocument = gql`
+    mutation ForkFlashcard($randId: String!) {
+  forkFlashcard(from: $randId) {
+    errors {
+      ...RegularError
+    }
+    forkedId
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type ForkFlashcardMutationFn = Apollo.MutationFunction<ForkFlashcardMutation, ForkFlashcardMutationVariables>;
+
+/**
+ * __useForkFlashcardMutation__
+ *
+ * To run a mutation, you first call `useForkFlashcardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useForkFlashcardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [forkFlashcardMutation, { data, loading, error }] = useForkFlashcardMutation({
+ *   variables: {
+ *      randId: // value for 'randId'
+ *   },
+ * });
+ */
+export function useForkFlashcardMutation(baseOptions?: Apollo.MutationHookOptions<ForkFlashcardMutation, ForkFlashcardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ForkFlashcardMutation, ForkFlashcardMutationVariables>(ForkFlashcardDocument, options);
+      }
+export type ForkFlashcardMutationHookResult = ReturnType<typeof useForkFlashcardMutation>;
+export type ForkFlashcardMutationResult = Apollo.MutationResult<ForkFlashcardMutation>;
+export type ForkFlashcardMutationOptions = Apollo.BaseMutationOptions<ForkFlashcardMutation, ForkFlashcardMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($idToken: String!, $name: String!) {
   login(idToken: $idToken, name: $name) {
@@ -735,10 +789,12 @@ export type UpdateFlashcardMutationOptions = Apollo.BaseMutationOptions<UpdateFl
 export const FlashcardDocument = gql`
     query Flashcard($randId: String!) {
   flashcard(randId: $randId) {
+    randId
     title
     body
     isPublic
     isForkedByYou
+    isFork
     difficulty
     tags {
       name

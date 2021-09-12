@@ -1,6 +1,7 @@
 fragment FlashcardMinimal on Flashcard {
   randId
   isFork
+  isForkedByYou
   creator {
     username
     name

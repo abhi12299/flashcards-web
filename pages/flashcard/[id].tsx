@@ -6,9 +6,9 @@ import { useIsAuthRequired } from '../../hooks/useIsAuthRequired'
 import { withApollo } from '../../utils/withApollo'
 
 const FlashcardPage: React.FC = () => {
-  const { query: { id } } = useRouter()
+  const { query: { id }, push } = useRouter()
   const timer = useRef(0)
-  const { loading: authChecking } = useIsAuthRequired()
+  const { loading: authChecking, data: meData } = useIsAuthRequired()
 
   const [getFlashcard, { loading, error, data }] = useFlashcardLazyQuery({
     fetchPolicy: 'network-only'
@@ -69,6 +69,12 @@ const FlashcardPage: React.FC = () => {
       <Link href="/feed">
         <a>Go home</a>
       </Link>
+      {
+        data.flashcard.creator.username === meData?.me?.username &&
+        <button onClick={() => push(`/flashcard/edit/${data.flashcard?.randId}`)}>
+          Edit
+        </button>
+      }
       <h3>{data.flashcard.title}</h3>
       <p>By: {data.flashcard.creator.name}</p>
       <p>Difficulty: {data.flashcard.difficulty}</p>

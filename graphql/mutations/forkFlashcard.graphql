@@ -1,0 +1,8 @@
+mutation ForkFlashcard($randId: String!) {
+  forkFlashcard(from: $randId) {
+    errors {
+      ...RegularError
+    }
+    forkedId
+  }
+}

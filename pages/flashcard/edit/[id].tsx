@@ -44,6 +44,7 @@ const FlashcardPage: React.FC = () => {
       console.error(errors)
       return
     }
+    // maybe go to feed?
     back()
   }
 
@@ -194,6 +195,7 @@ const FlashcardPage: React.FC = () => {
                 <input
                   type="checkbox"
                   name="isPublic"
+                  disabled={data.flashcard?.isFork}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   checked={values.isPublic}
