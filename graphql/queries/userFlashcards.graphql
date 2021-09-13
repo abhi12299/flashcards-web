@@ -3,7 +3,7 @@ query UserFlashcards(
   $cursor: Float
   $tags: [String!]
   $difficulty: Difficulty
-  $creatorId: Int
+  $username: String
 ) {
   userFlashcards(
     input: {
@@ -11,7 +11,7 @@ query UserFlashcards(
       cursor: $cursor
       tags: $tags
       difficulty: $difficulty
-      creatorId: $creatorId
+      username: $username
     }
   ) {
     hasMore

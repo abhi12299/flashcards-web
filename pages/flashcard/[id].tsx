@@ -70,7 +70,7 @@ const FlashcardPage: React.FC = () => {
         <a>Go home</a>
       </Link>
       {
-        data.flashcard.creator.username === meData?.me?.username &&
+        data.flashcard.creator.username === meData?.user?.username &&
         <button onClick={() => push(`/flashcard/edit/${data.flashcard?.randId}`)}>
           Edit
         </button>

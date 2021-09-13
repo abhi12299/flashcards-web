@@ -1,0 +1,7 @@
+query User($username: String) {
+  user(input: { username: $username }) {
+    ...RegularUser
+    numFlashcards
+    createdAt
+  }
+}

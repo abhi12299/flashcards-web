@@ -59,7 +59,7 @@ function Home() {
           </div>
           :
           (
-            data?.me
+            data?.user
               ? null :
               <main className={styles.main}>
                 <button onClick={handleLogin}>Login</button>

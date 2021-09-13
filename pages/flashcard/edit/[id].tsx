@@ -7,7 +7,7 @@ import { withApollo } from '../../../utils/withApollo'
 
 const FlashcardPage: React.FC = () => {
   const { query: { id }, push, back } = useRouter()
-  const { loading: authChecking, data: meData } = useIsAuthRequired()
+  const { loading: authChecking, data: userData } = useIsAuthRequired()
   const [tags, setTags] = useState<string[]>([])
   const difficultyValues: Difficulty[] = [Difficulty.Easy, Difficulty.Medium, Difficulty.Hard]
 
@@ -84,7 +84,7 @@ const FlashcardPage: React.FC = () => {
     )
   }
 
-  if (data.flashcard.creator.username !== meData?.me?.username) {
+  if (data.flashcard.creator.username !== userData?.user?.username) {
     // TODO: re-route to error page?
     return (
       <div>

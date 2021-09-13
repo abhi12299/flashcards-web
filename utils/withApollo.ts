@@ -79,6 +79,21 @@ const createClient = (ctx: NextPageContext) => {
                 };
               },
             },
+            userFlashcards: {
+              keyArgs: [],
+              merge(
+                existing: PaginatedFlashcards | undefined,
+                incoming: PaginatedFlashcards
+              ): PaginatedFlashcards {
+                return {
+                  ...incoming,
+                  flashcards: [
+                    ...(existing?.flashcards || []),
+                    ...incoming.flashcards,
+                  ],
+                };
+              },
+            },
           },
         },
       },

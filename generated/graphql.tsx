@@ -135,7 +135,7 @@ export type GetFlashcardsInput = {
   cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']>>;
   difficulty?: Maybe<Difficulty>;
-  creatorId?: Maybe<Scalars['Int']>;
+  username?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -209,7 +209,7 @@ export type Query = {
   myTopTags: Array<Tag>;
   topTags: Array<Tag>;
   searchTags: Array<Tag>;
-  me?: Maybe<User>;
+  user?: Maybe<User>;
 };
 
 
@@ -240,6 +240,11 @@ export type QueryFlashcardHistoryArgs = {
 
 export type QuerySearchTagsArgs = {
   input: SearchTagsInput;
+};
+
+
+export type QueryUserArgs = {
+  input: UserProfileInput;
 };
 
 /** Groups to be formed in reports */
@@ -306,6 +311,10 @@ export type User = {
   createdAt: Scalars['Float'];
   updatedAt: Scalars['Float'];
   numFlashcards: Scalars['Int'];
+};
+
+export type UserProfileInput = {
+  username?: Maybe<Scalars['String']>;
 };
 
 export type UserResponse = {
@@ -473,7 +482,7 @@ export type FlashcardsFeedQueryVariables = Exact<{
   cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   difficulty?: Maybe<Difficulty>;
-  creatorId?: Maybe<Scalars['Int']>;
+  username?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -489,12 +498,14 @@ export type FlashcardsFeedQuery = (
   ) }
 );
 
-export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserQueryVariables = Exact<{
+  username?: Maybe<Scalars['String']>;
+}>;
 
 
-export type MeQuery = (
+export type UserQuery = (
   { __typename?: 'Query' }
-  & { me?: Maybe<(
+  & { user?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'numFlashcards' | 'createdAt'>
     & RegularUserFragment
@@ -506,7 +517,7 @@ export type UserFlashcardsQueryVariables = Exact<{
   cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   difficulty?: Maybe<Difficulty>;
-  creatorId?: Maybe<Scalars['Int']>;
+  username?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -842,9 +853,9 @@ export type FlashcardQueryHookResult = ReturnType<typeof useFlashcardQuery>;
 export type FlashcardLazyQueryHookResult = ReturnType<typeof useFlashcardLazyQuery>;
 export type FlashcardQueryResult = Apollo.QueryResult<FlashcardQuery, FlashcardQueryVariables>;
 export const FlashcardsFeedDocument = gql`
-    query FlashcardsFeed($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+    query FlashcardsFeed($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $username: String) {
   flashcardsFeed(
-    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId}
+    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, username: $username}
   ) {
     hasMore
     total
@@ -871,7 +882,7 @@ export const FlashcardsFeedDocument = gql`
  *      cursor: // value for 'cursor'
  *      tags: // value for 'tags'
  *      difficulty: // value for 'difficulty'
- *      creatorId: // value for 'creatorId'
+ *      username: // value for 'username'
  *   },
  * });
  */
@@ -886,9 +897,9 @@ export function useFlashcardsFeedLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type FlashcardsFeedQueryHookResult = ReturnType<typeof useFlashcardsFeedQuery>;
 export type FlashcardsFeedLazyQueryHookResult = ReturnType<typeof useFlashcardsFeedLazyQuery>;
 export type FlashcardsFeedQueryResult = Apollo.QueryResult<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>;
-export const MeDocument = gql`
-    query Me {
-  me {
+export const UserDocument = gql`
+    query User($username: String) {
+  user(input: {username: $username}) {
     ...RegularUser
     numFlashcards
     createdAt
@@ -897,35 +908,36 @@ export const MeDocument = gql`
     ${RegularUserFragmentDoc}`;
 
 /**
- * __useMeQuery__
+ * __useUserQuery__
  *
- * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMeQuery({
+ * const { data, loading, error } = useUserQuery({
  *   variables: {
+ *      username: // value for 'username'
  *   },
  * });
  */
-export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+export function useUserQuery(baseOptions?: Apollo.QueryHookOptions<UserQuery, UserQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        return Apollo.useQuery<UserQuery, UserQueryVariables>(UserDocument, options);
       }
-export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQuery, UserQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+          return Apollo.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, options);
         }
-export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
-export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
-export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
+export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
+export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
 export const UserFlashcardsDocument = gql`
-    query UserFlashcards($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+    query UserFlashcards($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $username: String) {
   userFlashcards(
-    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId}
+    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, username: $username}
   ) {
     hasMore
     flashcards {
@@ -951,7 +963,7 @@ export const UserFlashcardsDocument = gql`
  *      cursor: // value for 'cursor'
  *      tags: // value for 'tags'
  *      difficulty: // value for 'difficulty'
- *      creatorId: // value for 'creatorId'
+ *      username: // value for 'username'
  *   },
  * });
  */

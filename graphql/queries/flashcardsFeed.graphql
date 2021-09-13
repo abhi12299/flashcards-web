@@ -3,7 +3,7 @@ query FlashcardsFeed(
   $cursor: Float
   $tags: [String!]
   $difficulty: Difficulty
-  $creatorId: Int
+  $username: String
 ) {
   flashcardsFeed(
     input: {
@@ -11,7 +11,7 @@ query FlashcardsFeed(
       cursor: $cursor
       tags: $tags
       difficulty: $difficulty
-      creatorId: $creatorId
+      username: $username
     }
   ) {
     hasMore

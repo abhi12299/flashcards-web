@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   const { query, isReady, push, replace } = useRouter()
   const [tags, setTags] = useState<string[]>([])
 
-  const { data: meData, loading: authChecking } = useIsAuthRequired()
+  const { data: userData, loading: authChecking } = useIsAuthRequired()
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
   const [forkFlashcard, { loading: forking }] = useForkFlashcardMutation()
@@ -43,14 +43,14 @@ const Home: React.FC = () => {
   }, [tags])
 
   useEffect(() => {
-    if (!isReady || authChecking || fetching || !meData?.me || error) return
+    if (!isReady || authChecking || fetching || !userData?.user || error) return
     getFlashcardsFeed({
       variables: {
         limit: 10,
         tags: tags.length > 0 ? tags : undefined
       }
     })
-  }, [error, fetching, getFlashcardsFeed, isReady, query, tags, authChecking, meData])
+  }, [error, fetching, getFlashcardsFeed, isReady, query, tags, authChecking, userData])
 
   const handleLogout = async () => {
     try {
@@ -105,6 +105,8 @@ const Home: React.FC = () => {
         {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
         Total: {data.flashcardsFeed.total}
         HasMore: {data.flashcardsFeed.hasMore ? 'Yes' : 'No'}
+        {/* TODO: extract in separate component and accept a prop */}
+        {/* so it can be reused in profile page */}
         {
           data.flashcardsFeed.flashcards.map(f => (
             <div key={f.randId}>
@@ -120,13 +122,13 @@ const Home: React.FC = () => {
                 </a>
               </Link>
               {
-                f.creator.username === meData?.me?.username &&
+                f.creator.username === userData?.user?.username &&
                 <>
                   <button onClick={() => push(`/flashcard/edit/${f.randId}`)}>Edit</button>
                 </>
               }
               {
-                f.creator.username !== meData?.me?.username &&
+                f.creator.username !== userData?.user?.username &&
                 !f.isForkedByYou &&
                 <>
                   <button onClick={() => handleFork(f.randId)}>Fork It!</button>
