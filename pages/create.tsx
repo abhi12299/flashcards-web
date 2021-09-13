@@ -35,7 +35,8 @@ const CreateFlashcard: React.FC = () => {
           tags
         },
         update(cache) {
-          cache.evict({ fieldName: "flashcards:{}" })
+          // TODO: update cache to add flashcard
+          cache.evict({ fieldName: 'flashcardsFeed' })
         }
       })
       if (errors || !data) {

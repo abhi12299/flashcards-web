@@ -132,7 +132,7 @@ export type GetFlashcardsHistoryInput = {
 
 export type GetFlashcardsInput = {
   limit: Scalars['Int'];
-  cursor?: Maybe<Scalars['String']>;
+  cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']>>;
   difficulty?: Maybe<Difficulty>;
   creatorId?: Maybe<Scalars['Int']>;
@@ -470,7 +470,7 @@ export type FlashcardQuery = (
 
 export type FlashcardsFeedQueryVariables = Exact<{
   limit: Scalars['Int'];
-  cursor?: Maybe<Scalars['String']>;
+  cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   difficulty?: Maybe<Difficulty>;
   creatorId?: Maybe<Scalars['Int']>;
@@ -503,7 +503,7 @@ export type MeQuery = (
 
 export type UserFlashcardsQueryVariables = Exact<{
   limit: Scalars['Int'];
-  cursor?: Maybe<Scalars['String']>;
+  cursor?: Maybe<Scalars['Float']>;
   tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   difficulty?: Maybe<Difficulty>;
   creatorId?: Maybe<Scalars['Int']>;
@@ -842,7 +842,7 @@ export type FlashcardQueryHookResult = ReturnType<typeof useFlashcardQuery>;
 export type FlashcardLazyQueryHookResult = ReturnType<typeof useFlashcardLazyQuery>;
 export type FlashcardQueryResult = Apollo.QueryResult<FlashcardQuery, FlashcardQueryVariables>;
 export const FlashcardsFeedDocument = gql`
-    query FlashcardsFeed($limit: Int!, $cursor: String, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+    query FlashcardsFeed($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
   flashcardsFeed(
     input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId}
   ) {
@@ -923,7 +923,7 @@ export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const UserFlashcardsDocument = gql`
-    query UserFlashcards($limit: Int!, $cursor: String, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
+    query UserFlashcards($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $creatorId: Int) {
   userFlashcards(
     input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, creatorId: $creatorId}
   ) {

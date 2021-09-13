@@ -43,14 +43,14 @@ const Home: React.FC = () => {
   }, [tags])
 
   useEffect(() => {
-    if (!isReady || authChecking || fetching || !meData?.me) return
+    if (!isReady || authChecking || fetching || !meData?.me || error) return
     getFlashcardsFeed({
       variables: {
         limit: 10,
         tags: tags.length > 0 ? tags : undefined
       }
     })
-  }, [fetching, getFlashcardsFeed, isReady, query, tags, authChecking, meData])
+  }, [error, fetching, getFlashcardsFeed, isReady, query, tags, authChecking, meData])
 
   const handleLogout = async () => {
     try {
@@ -68,10 +68,15 @@ const Home: React.FC = () => {
     const { errors, data } = await forkFlashcard({
       variables: {
         randId
+      },
+      update(cache) {
+        // TODO: make isForkedByYou true for current id
       }
     })
     if (data?.forkFlashcard.forkedId) {
-      push(`/flashcard/${data.forkFlashcard.forkedId}`)
+      await push(`/flashcard/${data.forkFlashcard.forkedId}`)
+      // remove this later
+      apolloClient.cache.evict({ fieldName: 'flashcardsFeed' })
     } else {
       console.error('cannot fork!', errors, data)
     }
@@ -129,6 +134,21 @@ const Home: React.FC = () => {
               }
             </div>
           ))
+        }
+        {/* TODO: do infinite scrolling here */}
+        {
+          data.flashcardsFeed.hasMore && fetchMore &&
+          <button onClick={() => {
+            const { flashcards } = data.flashcardsFeed
+            fetchMore({
+              variables: {
+                limit: 10,
+                cursor: flashcards[flashcards.length - 1].createdAt
+              }
+            })
+          }}>
+            Load more
+          </button>
         }
       </>
     )

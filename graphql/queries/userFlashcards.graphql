@@ -1,6 +1,6 @@
 query UserFlashcards(
   $limit: Int!
-  $cursor: String
+  $cursor: Float
   $tags: [String!]
   $difficulty: Difficulty
   $creatorId: Int

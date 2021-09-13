@@ -9,6 +9,7 @@ import { RetryLink } from "@apollo/link-retry";
 import ApolloLinkTimeout from "apollo-link-timeout";
 import cookie from "cookie";
 import { NextPageContext } from "next";
+import { PaginatedFlashcards } from "../generated/graphql";
 import { createWithApollo } from "./createWithApollo";
 
 const createClient = (ctx: NextPageContext) => {
@@ -59,7 +60,29 @@ const createClient = (ctx: NextPageContext) => {
     //       ? ctx?.req?.headers.cookie
     //       : undefined) || "",
     // },
-    cache: new InMemoryCache({}),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            flashcardsFeed: {
+              keyArgs: [],
+              merge(
+                existing: PaginatedFlashcards | undefined,
+                incoming: PaginatedFlashcards
+              ): PaginatedFlashcards {
+                return {
+                  ...incoming,
+                  flashcards: [
+                    ...(existing?.flashcards || []),
+                    ...incoming.flashcards,
+                  ],
+                };
+              },
+            },
+          },
+        },
+      },
+    }),
   });
   return client;
 };

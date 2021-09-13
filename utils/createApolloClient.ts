@@ -15,8 +15,6 @@ export const createApolloClient = () => {
   const timeoutLink = new ApolloLinkTimeout(10000); // 10s timeout
 
   const authLink = setContext((req, { headers }) => {
-    console.log("req is", req);
-    console.log("headers", headers);
     // const token = localStorage.getItem('token');
     const token = "";
     return {

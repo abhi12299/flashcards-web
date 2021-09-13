@@ -36,7 +36,7 @@ const FlashcardPage: React.FC = () => {
           args: { randId: id }
         })
         cache.evict({
-          fieldName: 'flashcardsFeed {}'
+          fieldName: 'flashcardsFeed'
         })
       }
     })
@@ -45,7 +45,7 @@ const FlashcardPage: React.FC = () => {
       return
     }
     // maybe go to feed?
-    back()
+    push(`/feed`)
   }
 
   useEffect(() => {
@@ -125,9 +125,8 @@ const FlashcardPage: React.FC = () => {
               tags: tags.filter(t => t.trim().length > 0)
             },
             update(cache) {
-              cache.evict({
-                fieldName: 'flashcardsFeed {}'
-              })
+              // TODO: just update in the cache
+              cache.evict({ fieldName: 'flashcardsFeed' })
             }
           })
           if (errors || !data || data.updateFlashcard.errors) {
