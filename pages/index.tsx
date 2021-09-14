@@ -37,7 +37,9 @@ function Home() {
       if (response.data?.login.errors) {
         console.error(response.data.login.errors)
       } else {
-        setTokenCookie('token', response.data?.login.accessToken!)
+        setTokenCookie('token', response.data?.login.accessToken!, {
+          maxAge: Date.now() + (1000 * 60 * 24 * 365) // 365 days
+        })
         refetchMeQuery()
       }
     } catch (error) {
