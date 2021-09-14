@@ -1,7 +1,7 @@
 import { useApolloClient } from '@apollo/client';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+import FlashcardsList from '../../components/FlashcardsList';
 import { useForkFlashcardMutation, useUserFlashcardsLazyQuery, useUserLazyQuery } from '../../generated/graphql';
 import { useIsAuthRequired } from '../../hooks/useIsAuthRequired';
 import { withApollo } from '../../utils/withApollo';
@@ -96,40 +96,13 @@ const ProfilePage: React.FC = () => {
         userFcData && userFcData.userFlashcards.flashcards.length > 0 &&
         <>
           <p>Their flashcards:</p>
-          {
-            userFcData.userFlashcards.flashcards.map(f => (
-              <div key={f.randId}>
-                <Link href={`/flashcard/${f.randId}`}>
-                  <a>
-                    {f.title}
-                    <br />
-                    {f.difficulty}
-                    <br />
-                    {f.creator.name}
-                    <br />
-                    {f.createdAt}
-                  </a>
-                </Link>
-                {
-                  f.creator.username === userData?.user?.username &&
-                  <>
-                    <button onClick={() => push(`/flashcard/edit/${f.randId}`)}>Edit</button>
-                  </>
-                }
-                {
-                  f.creator.username !== userData?.user?.username &&
-                  !f.isForkedByYou &&
-                  <>
-                    <button onClick={() => handleFork(f.randId)}>Fork It!</button>
-                  </>
-                }
-              </div>
-            ))
-          }
-          {/* TODO: do infinite scrolling here */}
-          {
-            userFcData.userFlashcards.hasMore && fetchMore &&
-            <button onClick={() => {
+          <FlashcardsList
+            userData={userData}
+            hasMore={userFcData.userFlashcards.hasMore}
+            flashcards={userFcData.userFlashcards.flashcards}
+            handleFork={handleFork}
+            fetchMore={async () => {
+              if (!fetchMore || fcLoading) return
               const { flashcards } = userFcData.userFlashcards
               fetchMore({
                 variables: {
@@ -137,10 +110,8 @@ const ProfilePage: React.FC = () => {
                   cursor: flashcards[flashcards.length - 1].createdAt
                 }
               })
-            }}>
-              Load more
-            </button>
-          }
+            }}
+          />
         </>
       }
     </div>

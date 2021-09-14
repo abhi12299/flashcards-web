@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
+import FlashcardsList from '../components/FlashcardsList'
 import { useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import firebase from '../init/firebase'
@@ -105,42 +106,10 @@ const Home: React.FC = () => {
         {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
         Total: {data.flashcardsFeed.total}
         HasMore: {data.flashcardsFeed.hasMore ? 'Yes' : 'No'}
-        {/* TODO: extract in separate component and accept a prop */}
-        {/* so it can be reused in profile page */}
-        {
-          data.flashcardsFeed.flashcards.map(f => (
-            <div key={f.randId}>
-              <Link href={`/flashcard/${f.randId}`}>
-                <a>
-                  {f.title}
-                  <br />
-                  {f.difficulty}
-                  <br />
-                  {f.creator.name}
-                  <br />
-                  {f.createdAt}
-                </a>
-              </Link>
-              {
-                f.creator.username === userData?.user?.username &&
-                <>
-                  <button onClick={() => push(`/flashcard/edit/${f.randId}`)}>Edit</button>
-                </>
-              }
-              {
-                f.creator.username !== userData?.user?.username &&
-                !f.isForkedByYou &&
-                <>
-                  <button onClick={() => handleFork(f.randId)}>Fork It!</button>
-                </>
-              }
-            </div>
-          ))
-        }
-        {/* TODO: do infinite scrolling here */}
-        {
-          data.flashcardsFeed.hasMore && fetchMore &&
-          <button onClick={() => {
+        <FlashcardsList
+          hasMore={data.flashcardsFeed.hasMore}
+          fetchMore={async () => {
+            if (!fetchMore) return
             const { flashcards } = data.flashcardsFeed
             fetchMore({
               variables: {
@@ -148,10 +117,11 @@ const Home: React.FC = () => {
                 cursor: flashcards[flashcards.length - 1].createdAt
               }
             })
-          }}>
-            Load more
-          </button>
-        }
+          }}
+          flashcards={data.flashcardsFeed.flashcards}
+          userData={userData}
+          handleFork={handleFork}
+        />
       </>
     )
   }
