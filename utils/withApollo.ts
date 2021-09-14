@@ -65,7 +65,7 @@ const createClient = (ctx: NextPageContext) => {
         Query: {
           fields: {
             flashcardsFeed: {
-              keyArgs: [],
+              keyArgs: ["input", ["tags", "difficulty", "username"]],
               merge(
                 existing: PaginatedFlashcards | undefined,
                 incoming: PaginatedFlashcards
@@ -80,7 +80,7 @@ const createClient = (ctx: NextPageContext) => {
               },
             },
             userFlashcards: {
-              keyArgs: [],
+              keyArgs: ["input", ["tags", "difficulty", "username"]],
               merge(
                 existing: PaginatedFlashcards | undefined,
                 incoming: PaginatedFlashcards

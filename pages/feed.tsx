@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import FlashcardsList from '../components/FlashcardsList'
-import { useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
+import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
@@ -12,6 +12,7 @@ import { withApollo } from '../utils/withApollo'
 const Home: React.FC = () => {
   const { query, isReady, push, replace } = useRouter()
   const [tags, setTags] = useState<string[]>([])
+  const [difficulty, setDifficulty] = useState<Difficulty>()
 
   const { data: userData, loading: authChecking } = useIsAuthRequired()
   const [_, __, removeTokenCookie] = useCookies(['token'])
@@ -29,6 +30,20 @@ const Home: React.FC = () => {
       tags = []
     }
     setTags(tags)
+    let { difficulty } = query
+    if (typeof difficulty === 'string') {
+      switch (difficulty.toLowerCase()) {
+        case 'easy':
+          setDifficulty(Difficulty.Easy)
+          break
+        case 'medium':
+          setDifficulty(Difficulty.Medium)
+          break
+        case 'hard':
+          setDifficulty(Difficulty.Hard)
+          break
+      }
+    }
   }, [isReady])
 
   useEffect(() => {
@@ -48,10 +63,11 @@ const Home: React.FC = () => {
     getFlashcardsFeed({
       variables: {
         limit: 10,
-        tags: tags.length > 0 ? tags : undefined
+        tags: tags.length > 0 ? tags : undefined,
+        difficulty: difficulty || undefined
       }
     })
-  }, [error, fetching, getFlashcardsFeed, isReady, query, tags, authChecking, userData])
+  }, [error, fetching, getFlashcardsFeed, isReady, tags, difficulty, authChecking, userData])
 
   const handleLogout = async () => {
     try {
@@ -70,13 +86,13 @@ const Home: React.FC = () => {
       variables: {
         randId
       },
-      update(cache) {
-        // TODO: make isForkedByYou true for current id
-      }
+      // update(cache) {
+      //   //  TODO: update cache somehow to set isForkedByYou true
+      // }
     })
     if (data?.forkFlashcard.forkedId) {
       await push(`/flashcard/${data.forkFlashcard.forkedId}`)
-      // remove this later
+      // FIXME: remove this later
       apolloClient.cache.evict({ fieldName: 'flashcardsFeed' })
     } else {
       console.error('cannot fork!', errors, data)

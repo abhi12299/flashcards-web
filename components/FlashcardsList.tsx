@@ -50,6 +50,7 @@ const FlashcardsList: React.FC<{
                 <button onClick={() => handleFork(f.randId)}>Fork It!</button>
               </>
             }
+            <hr />
           </div>
         ))
       }

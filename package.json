@@ -34,8 +34,11 @@
     "@types/javascript-time-ago": "^2.0.2",
     "@types/promise.allsettled": "^1.0.3",
     "@types/react": "17.0.11",
+    "autoprefixer": "^10.3.4",
     "eslint": "7.29.0",
     "eslint-config-next": "11.0.1",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.15",
     "typescript": "4.3.4"
   }
 }
