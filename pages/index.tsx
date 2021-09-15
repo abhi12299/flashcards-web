@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Features from '../components/Features';
 import Hero from '../components/Hero';
 import Layout from '../components/Layout';
 import { withApollo } from '../utils/withApollo';
@@ -14,6 +15,7 @@ function Home() {
       </Head>
       <Layout>
         <Hero />
+        <Features />
       </Layout>
     </>
   )
