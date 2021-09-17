@@ -14,7 +14,7 @@ const Features: React.FC = () => {
         <div className="py-12 md:py-20">
 
           {/* Section header */}
-          <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
+          <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20" data-aos="zoom-y-out">
             <h2 className="h2 mb-4">How It Works</h2>
             <p className="text-xl text-gray-600">
               An open source, community driven flashcards app for sharing knowledge.
@@ -25,7 +25,7 @@ const Features: React.FC = () => {
           <div className="max-w-sm mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-2 items-start md:max-w-2xl lg:max-w-none">
 
             {/* 1st item */}
-            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl">
+            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl" data-aos="zoom-y-out" data-aos-delay="150">
               <div className="rounded-full items-center fill-current text-blue-600">
                 <FontAwesomeIcon icon={faEdit} size="2x" className="w-16 h-16" />
               </div>
@@ -36,7 +36,7 @@ const Features: React.FC = () => {
             </div>
 
             {/* 2nd item */}
-            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl">
+            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl" data-aos="zoom-y-out" data-aos-delay="150">
               <div className="rounded-full items-center fill-current text-blue-600">
                 <FontAwesomeIcon icon={faBook} size="2x" className="w-16 h-16" />
               </div>
@@ -47,7 +47,7 @@ const Features: React.FC = () => {
             </div>
 
             {/* 3rd item */}
-            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl">
+            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl" data-aos="zoom-y-out" data-aos-delay="150">
               <div className="rounded-full items-center fill-current text-blue-600">
                 <FontAwesomeIcon icon={faGlobe} size="2x" className="w-16 h-16" />
               </div>
@@ -58,7 +58,7 @@ const Features: React.FC = () => {
             </div>
 
             {/* 4th item */}
-            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl">
+            <div className="feat relative flex flex-col items-center p-6 bg-white rounded shadow-xl" data-aos="zoom-y-out" data-aos-delay="150">
               <div className="rounded-full items-center fill-current text-blue-600">
                 <FontAwesomeIcon icon={faShareAlt} size="2x" className="w-16 h-16" />
               </div>
