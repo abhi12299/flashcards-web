@@ -14,11 +14,11 @@ const Features: React.FC = () => {
         <div className="py-12 md:py-20">
 
           {/* Section header */}
-          <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20" data-aos="zoom-y-out">
-            <h2 className="h2 mb-4">How It Works</h2>
-            <p className="text-xl text-gray-600">
+          <div className="max-w-3xl mx-auto text-center pb-10 md:pb-16" data-aos="zoom-y-out">
+            <h2 className="h2">How It Works</h2>
+            {/* <p className="text-xl text-gray-600">
               An open source, community driven flashcards app for sharing knowledge.
-            </p>
+            </p> */}
           </div>
 
           {/* Items */}

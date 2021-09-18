@@ -123,21 +123,21 @@ const Footer: React.FC = () => {
           <ul className="flex mb-4 md:order-1 md:ml-4 md:mb-0">
             <li>
               <Link href="#" aria-label="Twitter">
-                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 rounded-full shadow transition duration-150 ease-in-out">
+                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 transition duration-150 ease-in-out">
                   <FontAwesomeIcon style={{ fontSize: '1.5rem' }} icon={faTwitter} />
                 </a>
               </Link>
             </li>
             <li className="ml-4">
               <Link href="#" aria-label="Github">
-                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 rounded-full shadow transition duration-150 ease-in-out">
+                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 transition duration-150 ease-in-out">
                   <FontAwesomeIcon style={{ fontSize: '1.5rem' }} icon={faGithub} />
                 </a>
               </Link>
             </li>
             <li className="ml-4">
               <Link href="#" aria-label="LinkedIn">
-                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 rounded-full shadow transition duration-150 ease-in-out">
+                <a className="flex justify-center items-center text-gray-600 hover:text-gray-900 bg-white hover:bg-white-100 transition duration-150 ease-in-out">
                   <FontAwesomeIcon style={{ fontSize: '1.5rem' }} icon={faLinkedin} />
                 </a>
               </Link>
