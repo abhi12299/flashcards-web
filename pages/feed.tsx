@@ -1,12 +1,12 @@
 import { useApolloClient } from '@apollo/client'
-import Link from 'next/link'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { Dropdown } from 'primereact/dropdown'
 import React, { useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
 import FlashcardsList from '../components/FlashcardsList'
+import Layout from '../components/Layout'
 import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
-import firebase from '../init/firebase'
 import { withApollo } from '../utils/withApollo'
 
 const Home: React.FC = () => {
@@ -15,7 +15,6 @@ const Home: React.FC = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>()
 
   const { data: userData, loading: authChecking } = useIsAuthRequired()
-  const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
   const [forkFlashcard, { loading: forking }] = useForkFlashcardMutation()
   const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery()
@@ -23,14 +22,14 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (!isReady) return
 
-    let { tags } = query
+    let { tags, difficulty } = query
     if (typeof tags === 'string') {
       tags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0)
     } else {
       tags = []
     }
     setTags(tags)
-    let { difficulty } = query
+
     if (typeof difficulty === 'string') {
       switch (difficulty.toLowerCase()) {
         case 'easy':
@@ -59,6 +58,23 @@ const Home: React.FC = () => {
   }, [tags])
 
   useEffect(() => {
+    if (!difficulty) {
+      const queryWithoutDifficulty = query
+      delete queryWithoutDifficulty.difficulty
+      replace({
+        query: queryWithoutDifficulty
+      })
+      return
+    }
+    replace({
+      query: {
+        ...query,
+        difficulty: difficulty.toLowerCase()
+      }
+    })
+  }, [difficulty])
+
+  useEffect(() => {
     if (!isReady || authChecking || fetching || !userData?.user || error) return
     getFlashcardsFeed({
       variables: {
@@ -68,17 +84,6 @@ const Home: React.FC = () => {
       }
     })
   }, [error, fetching, getFlashcardsFeed, isReady, tags, difficulty, authChecking, userData])
-
-  const handleLogout = async () => {
-    try {
-      await firebase.auth().signOut()
-    } catch (error) {
-      console.error(error)
-    }
-    removeTokenCookie('token')
-    apolloClient.clearStore()
-    push('/')
-  }
 
   const handleFork = async (randId: string) => {
     if (forking) return
@@ -116,12 +121,9 @@ const Home: React.FC = () => {
       <div>No data!</div>
     )
   } else {
-    // console.log(data.flashcardsFeed.flashcards)
     pageContent = (
       <>
-        {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
-        Total: {data.flashcardsFeed.total}
-        HasMore: {data.flashcardsFeed.hasMore ? 'Yes' : 'No'}
+        Showing {data.flashcardsFeed.flashcards.length} of {data.flashcardsFeed.total}
         <FlashcardsList
           hasMore={data.flashcardsFeed.hasMore}
           fetchMore={async () => {
@@ -144,23 +146,56 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div>Home!</div>
-      {
-        authChecking ?
-          <div>Loading...</div>
-          :
-          (
-            <>
-              <button onClick={handleLogout}>
-                Logout
-              </button>
-              <Link href="/create">
-                <a>Create New Flashcard</a>
-              </Link>
-              {pageContent}
-            </>
-          )
-      }
+      <Head>
+        <title>Flashcards</title>
+        <meta name="description" content="A community driven, open source flashcard website." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Layout>
+        <div className="container max-w-6xl mx-auto px-5 sm:px-6 pt-20 md:pt-30">
+          <section>
+            <h1 className="text-2xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4">
+              Your Feed
+            </h1>
+            <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
+              {/* difficulty dropdown */}
+              <div className="col-span-1">
+                <Dropdown
+                  className="w-full"
+                  placeholder="Select Difficulty (all)"
+                  value={difficulty || ''}
+                  options={[
+                    { label: 'Select Difficulty (all)', value: '' },
+                    { label: 'Easy', value: Difficulty.Easy },
+                    { label: 'Medium', value: Difficulty.Medium },
+                    { label: 'Hard', value: Difficulty.Hard },
+                  ]}
+                  onChange={e => {
+                    if (!e.value) {
+                      setDifficulty(undefined)
+                    } else {
+                      setDifficulty(e.value)
+                    }
+                  }}
+                />
+              </div>
+              {/* tags filter */}
+              <div className="col-span-1">
+                {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
+                Tags filter
+              </div>
+              {/* search section */}
+              <div className="col-span-2">Search section</div>
+            </div>
+          </section>
+          {
+            authChecking ?
+              null
+              :
+              pageContent
+          }
+        </div>
+      </Layout>
     </>
   )
 }

@@ -5,14 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useLoginMutation, UserQuery, useUserQuery } from "../generated/graphql";
+import { useLoginMutation, UserDocument, UserQuery, useUserQuery } from "../generated/graphql";
 import firebase from '../init/firebase';
 import Spinner from "./Spinner";
 
 const ProfileAvatarDropdown: React.FC<{
   user: UserQuery['user']
-  refetch: any;
-}> = ({ user, refetch }) => {
+}> = ({ user }) => {
   const { push } = useRouter()
   const [showDropdown, setShowDropdown] = useState(false)
   const [_, __, removeTokenCookie] = useCookies(['token'])
@@ -29,8 +28,9 @@ const ProfileAvatarDropdown: React.FC<{
     removeTokenCookie('token')
     // clear store does not trigger query refetch
     await apolloClient.clearStore()
-    // only want to refetch user data so logout state is enforced
-    refetch()
+    apolloClient.refetchQueries({
+      include: [UserDocument]
+    })
     push('/')
   }
 
@@ -64,15 +64,21 @@ const ProfileAvatarDropdown: React.FC<{
         showDropdown &&
         <ul ref={ref} className="absolute w-56 p-2 mt-2 text-gray-600 bg-white border border-gray-100 rounded-lg shadow-md min-w-max-content dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700 right-0" aria-label="submenu">
           <li className="mb-2 last:mb-0">
-            <a onClick={() => push(`/profile/${user!.username}`)} className="inline-flex items-center cursor-pointer w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200">
-              <FontAwesomeIcon className="w-5 h-5 mr-3" icon={faUser} />
-              <span>Profile</span>
+            <a onClick={() => {
+              setShowDropdown(false)
+              push('/feed')
+            }} className="inline-flex items-center cursor-pointer w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+              <FontAwesomeIcon className="w-5 h-5 mr-3" icon={faBinoculars} />
+              <span>Explore</span>
             </a>
           </li>
           <li className="mb-2 last:mb-0">
-            <a onClick={() => push('/feed')} className="inline-flex items-center cursor-pointer w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200">
-              <FontAwesomeIcon className="w-5 h-5 mr-3" icon={faBinoculars} />
-              <span>Explore</span>
+            <a onClick={() => {
+              setShowDropdown(false)
+              push(`/profile/${user!.username}`)
+            }} className="inline-flex items-center cursor-pointer w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+              <FontAwesomeIcon className="w-5 h-5 mr-3" icon={faUser} />
+              <span>Profile</span>
             </a>
           </li>
           <li className="mb-2 last:mb-0">
@@ -171,7 +177,7 @@ const Header = () => {
                     :
                     (
                       data?.user ?
-                        <ProfileAvatarDropdown user={data.user} refetch={refetchMeQuery} />
+                        <ProfileAvatarDropdown user={data.user} />
                         :
                         <a
                           className="font-medium cursor-pointer text-gray-600 hover:text-gray-900 px-5 py-3 flex items-center transition duration-150 ease-in-out"
