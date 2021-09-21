@@ -189,7 +189,6 @@ export type PaginatedFlashcards = {
   __typename?: 'PaginatedFlashcards';
   flashcards: Array<Flashcard>;
   hasMore: Scalars['Boolean'];
-  total: Scalars['Int'];
 };
 
 export type PaginatedFlashcardsHistory = {
@@ -490,7 +489,7 @@ export type FlashcardsFeedQuery = (
   { __typename?: 'Query' }
   & { flashcardsFeed: (
     { __typename?: 'PaginatedFlashcards' }
-    & Pick<PaginatedFlashcards, 'hasMore' | 'total'>
+    & Pick<PaginatedFlashcards, 'hasMore'>
     & { flashcards: Array<(
       { __typename?: 'Flashcard' }
       & FlashcardMinimalFragment
@@ -882,7 +881,6 @@ export const FlashcardsFeedDocument = gql`
     input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, username: $username}
   ) {
     hasMore
-    total
     flashcards {
       ...FlashcardMinimal
     }

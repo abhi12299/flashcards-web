@@ -1,4 +1,6 @@
 import { useApolloClient } from '@apollo/client'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { Dropdown } from 'primereact/dropdown'
@@ -8,11 +10,13 @@ import FlashcardsList from '../components/FlashcardsList'
 import Layout from '../components/Layout'
 import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation, useMyTopTagsQuery, useSearchTagsQuery } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
+import { removeSpecialChars } from '../utils/removeSpecialChars'
 import { withApollo } from '../utils/withApollo'
 
 const Home: React.FC = () => {
   const { query, isReady, push, replace } = useRouter()
   const [tags, setTags] = useState<string[]>([])
+  const [searchFlashcardTerm, setSearchFlashcardTerm] = useState('')
   const [difficulty, setDifficulty] = useState<Difficulty>()
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
   const tagSearchInputRef = useRef<HTMLInputElement>(null)
@@ -25,19 +29,6 @@ const Home: React.FC = () => {
     skip: true
   })
   const { data: myTopTags } = useMyTopTagsQuery()
-
-  useEffect(() => {
-    if (tagSearchInputRef.current) {
-      tagSearchInputRef.current.setAttribute('rows', '1')
-      tagSearchInputRef.current.setAttribute('placeholder', 'Type # to filter by tags')
-    }
-  }, [tagSearchInputRef])
-
-  useEffect(() => {
-    if (myTopTags?.myTopTags) {
-      setTagSuggestions(myTopTags.myTopTags.map(t => t.name))
-    }
-  }, [myTopTags])
 
   const handleSearchTags = async (term: string) => {
     if (searching) return
@@ -55,9 +46,22 @@ const Home: React.FC = () => {
   }
 
   useEffect(() => {
+    if (tagSearchInputRef.current) {
+      tagSearchInputRef.current.setAttribute('rows', '1')
+      tagSearchInputRef.current.setAttribute('placeholder', 'Type # to filter by tags')
+    }
+  }, [tagSearchInputRef])
+
+  useEffect(() => {
+    if (myTopTags?.myTopTags) {
+      setTagSuggestions(myTopTags.myTopTags.map(t => t.name))
+    }
+  }, [myTopTags])
+
+  useEffect(() => {
     if (!isReady) return
 
-    let { tags, difficulty } = query
+    let { tags, difficulty, q } = query
     if (typeof tags === 'string') {
       tags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0)
     } else {
@@ -65,7 +69,6 @@ const Home: React.FC = () => {
     }
     setTags(tags)
     if (tagSearchInputRef.current && tags.length > 0) {
-      console.log('setting initial value in tag filter')
       tagSearchInputRef.current.value = `${tags.map(t => `#${t}`).join(' ')} `
     }
 
@@ -82,9 +85,24 @@ const Home: React.FC = () => {
           break
       }
     }
+    if (typeof q === 'string') {
+      // remove special chars
+      setSearchFlashcardTerm(removeSpecialChars(q))
+    }
   }, [isReady])
 
   useEffect(() => {
+    if (!isReady || authChecking || fetching || !userData?.user || error) return
+    getFlashcardsFeed({
+      variables: {
+        limit: 10,
+        tags: tags.length > 0 ? tags : undefined,
+        difficulty: difficulty || undefined
+      }
+    })
+  }, [error, fetching, getFlashcardsFeed, isReady, tags, difficulty, authChecking, userData])
+
+  const updateTagsQueryParams = (tags: string[]) => {
     if (tags.length > 0) {
       // update query param
       replace({
@@ -101,9 +119,9 @@ const Home: React.FC = () => {
         }
       })
     }
-  }, [tags])
+  }
 
-  useEffect(() => {
+  const updateDifficultyQueryParam = (difficulty?: Difficulty) => {
     if (!difficulty) {
       const queryWithoutDifficulty = query
       delete queryWithoutDifficulty.difficulty
@@ -118,18 +136,24 @@ const Home: React.FC = () => {
         difficulty: difficulty.toLowerCase()
       }
     })
-  }, [difficulty])
+  }
 
-  useEffect(() => {
-    if (!isReady || authChecking || fetching || !userData?.user || error) return
-    getFlashcardsFeed({
-      variables: {
-        limit: 10,
-        tags: tags.length > 0 ? tags : undefined,
-        difficulty: difficulty || undefined
+  const updateSearchFlashcardQueryParam = (term?: string) => {
+    if (!term) {
+      const queryWithoutText = query
+      delete queryWithoutText.q
+      replace({
+        query: queryWithoutText
+      })
+      return
+    }
+    replace({
+      query: {
+        ...query,
+        q: term
       }
     })
-  }, [error, fetching, getFlashcardsFeed, isReady, tags, difficulty, authChecking, userData])
+  }
 
   const handleFork = async (randId: string) => {
     if (forking) return
@@ -157,9 +181,16 @@ const Home: React.FC = () => {
     inputTags = Array.from(new Set(inputTags))
     if (inputTags.length > 0) {
       setTags(inputTags)
+      updateTagsQueryParams(inputTags)
     } else {
       setTags([])
+      updateTagsQueryParams([])
     }
+  }
+
+  const handleSearchFlashcards = () => {
+    console.log('searching for', searchFlashcardTerm)
+    updateSearchFlashcardQueryParam(searchFlashcardTerm)
   }
 
   let pageContent: JSX.Element | null = null
@@ -181,7 +212,7 @@ const Home: React.FC = () => {
   } else {
     pageContent = (
       <>
-        Showing {data.flashcardsFeed.flashcards.length} of {data.flashcardsFeed.total}
+        has more: {data.flashcardsFeed.hasMore ? 'yes' : 'no'}
         <FlashcardsList
           hasMore={data.flashcardsFeed.hasMore}
           fetchMore={async () => {
@@ -215,7 +246,47 @@ const Home: React.FC = () => {
             <h1 className="text-2xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4">
               Your Feed
             </h1>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
+              {/* search section */}
+              <div className="col-span-2">
+                <div className="w-4/5 h-full relative text-gray-600">
+                  <input
+                    value={searchFlashcardTerm}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        handleSearchFlashcards()
+                      }
+                    }}
+                    onChange={e => setSearchFlashcardTerm(removeSpecialChars(e.target.value))}
+                    style={{ border: '1px solid #ced4da' }}
+                    className="border-2 h-full w-full bg-white px-4 pr-12 rounded text-sm focus:outline-none"
+                    type="text"
+                    placeholder="Search for anything"
+                  />
+                  <button className="absolute w-10 h-10 right-0 top-0" onClick={() => {
+                    if (searchFlashcardTerm) {
+                      handleSearchFlashcards()
+                    }
+                  }}>
+                    <FontAwesomeIcon icon={faSearch} />
+                  </button>
+                </div>
+              </div>
+              {/* tags filter */}
+              <div className="flex flex-row justify-end col-span-2">
+                <Mention
+                  suggestions={tagSuggestions}
+                  inputRef={tagSearchInputRef}
+                  onSearch={(e) => handleSearchTags(e.query)}
+                  delay={500}
+                  trigger="#"
+                  inputClassName="w-full resize-none"
+                  className="w-2/4"
+                />
+                <button className="ml-2 outline-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => updateTagFilter()}>
+                  Filter
+                </button>
+              </div>
               {/* difficulty dropdown */}
               <div className="col-span-1">
                 <Dropdown
@@ -231,29 +302,14 @@ const Home: React.FC = () => {
                   onChange={e => {
                     if (!e.value) {
                       setDifficulty(undefined)
+                      updateDifficultyQueryParam()
                     } else {
                       setDifficulty(e.value)
+                      updateDifficultyQueryParam(e.value)
                     }
                   }}
                 />
               </div>
-              {/* tags filter */}
-              <div className="text-right col-span-2">
-                <Mention
-                  suggestions={tagSuggestions}
-                  inputRef={tagSearchInputRef}
-                  onSearch={(e) => handleSearchTags(e.query)}
-                  delay={500}
-                  trigger="#"
-                  inputClassName="w-full resize-none"
-                  className="w-2/4"
-                />
-                <button className="ml-2 outline-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => updateTagFilter()}>
-                  Filter
-                </button>
-              </div>
-              {/* search section */}
-              <div className="col-span-2">Search section</div>
             </div>
           </section>
           {
