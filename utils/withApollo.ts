@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   ApolloClient,
   ApolloLink,
@@ -65,7 +66,10 @@ const createClient = (ctx: NextPageContext) => {
         Query: {
           fields: {
             flashcardsFeed: {
-              keyArgs: ["input", ["tags", "difficulty", "username"]],
+              keyArgs: [
+                "input",
+                ["tags", "difficulty", "username", "searchTerm"],
+              ],
               merge(
                 existing: PaginatedFlashcards | undefined,
                 incoming: PaginatedFlashcards
@@ -80,7 +84,10 @@ const createClient = (ctx: NextPageContext) => {
               },
             },
             userFlashcards: {
-              keyArgs: ["input", ["tags", "difficulty", "username"]],
+              keyArgs: [
+                "input",
+                ["tags", "difficulty", "username", "searchTerm"],
+              ],
               merge(
                 existing: PaginatedFlashcards | undefined,
                 incoming: PaginatedFlashcards

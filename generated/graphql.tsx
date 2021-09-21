@@ -136,6 +136,7 @@ export type GetFlashcardsInput = {
   tags?: Maybe<Array<Scalars['String']>>;
   difficulty?: Maybe<Difficulty>;
   username?: Maybe<Scalars['String']>;
+  searchTerm?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -482,6 +483,7 @@ export type FlashcardsFeedQueryVariables = Exact<{
   tags?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   difficulty?: Maybe<Difficulty>;
   username?: Maybe<Scalars['String']>;
+  searchTerm?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -876,9 +878,9 @@ export type FlashcardQueryHookResult = ReturnType<typeof useFlashcardQuery>;
 export type FlashcardLazyQueryHookResult = ReturnType<typeof useFlashcardLazyQuery>;
 export type FlashcardQueryResult = Apollo.QueryResult<FlashcardQuery, FlashcardQueryVariables>;
 export const FlashcardsFeedDocument = gql`
-    query FlashcardsFeed($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $username: String) {
+    query FlashcardsFeed($limit: Int!, $cursor: Float, $tags: [String!], $difficulty: Difficulty, $username: String, $searchTerm: String) {
   flashcardsFeed(
-    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, username: $username}
+    input: {limit: $limit, cursor: $cursor, tags: $tags, difficulty: $difficulty, username: $username, searchTerm: $searchTerm}
   ) {
     hasMore
     flashcards {
@@ -905,6 +907,7 @@ export const FlashcardsFeedDocument = gql`
  *      tags: // value for 'tags'
  *      difficulty: // value for 'difficulty'
  *      username: // value for 'username'
+ *      searchTerm: // value for 'searchTerm'
  *   },
  * });
  */

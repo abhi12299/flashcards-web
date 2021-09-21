@@ -16,6 +16,7 @@ import { withApollo } from '../utils/withApollo'
 const Home: React.FC = () => {
   const { query, isReady, push, replace } = useRouter()
   const [tags, setTags] = useState<string[]>([])
+  const [searchFlashcardInputValue, setSearchFlashcardInputValue] = useState('')
   const [searchFlashcardTerm, setSearchFlashcardTerm] = useState('')
   const [difficulty, setDifficulty] = useState<Difficulty>()
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
@@ -23,8 +24,8 @@ const Home: React.FC = () => {
   const { data: userData, loading: authChecking } = useIsAuthRequired()
   const apolloClient = useApolloClient()
   const [forkFlashcard, { loading: forking }] = useForkFlashcardMutation()
-  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore }] = useFlashcardsFeedLazyQuery()
-  const { refetch, loading: searching } = useSearchTagsQuery({
+  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables: flashcardsFeedVariables, refetch: flashcardsFeedRefetch }] = useFlashcardsFeedLazyQuery()
+  const { refetch: searchTags, loading: searching } = useSearchTagsQuery({
     fetchPolicy: 'network-only',
     skip: true
   })
@@ -35,9 +36,9 @@ const Home: React.FC = () => {
     if (!term && myTopTags?.myTopTags) {
       setTagSuggestions(myTopTags.myTopTags.map(t => t.name))
     }
-    if (term && refetch) {
+    if (term && searchTags) {
       try {
-        const { data } = await refetch({ term })
+        const { data } = await searchTags({ term })
         setTagSuggestions(data.searchTags.map(t => t.name))
       } catch (error) {
         console.error(error)
@@ -87,6 +88,7 @@ const Home: React.FC = () => {
     }
     if (typeof q === 'string') {
       // remove special chars
+      setSearchFlashcardInputValue(removeSpecialChars(q))
       setSearchFlashcardTerm(removeSpecialChars(q))
     }
   }, [isReady])
@@ -95,12 +97,13 @@ const Home: React.FC = () => {
     if (!isReady || authChecking || fetching || !userData?.user || error) return
     getFlashcardsFeed({
       variables: {
-        limit: 10,
+        limit: 9,
         tags: tags.length > 0 ? tags : undefined,
-        difficulty: difficulty || undefined
+        difficulty: difficulty || undefined,
+        searchTerm: searchFlashcardTerm
       }
     })
-  }, [error, fetching, getFlashcardsFeed, isReady, tags, difficulty, authChecking, userData])
+  }, [error, fetching, getFlashcardsFeed, isReady, searchFlashcardTerm, tags, difficulty, authChecking, userData])
 
   const updateTagsQueryParams = (tags: string[]) => {
     if (tags.length > 0) {
@@ -189,8 +192,8 @@ const Home: React.FC = () => {
   }
 
   const handleSearchFlashcards = () => {
-    console.log('searching for', searchFlashcardTerm)
-    updateSearchFlashcardQueryParam(searchFlashcardTerm)
+    updateSearchFlashcardQueryParam(searchFlashcardInputValue)
+    setSearchFlashcardTerm(searchFlashcardInputValue)
   }
 
   let pageContent: JSX.Element | null = null
@@ -220,7 +223,7 @@ const Home: React.FC = () => {
             const { flashcards } = data.flashcardsFeed
             fetchMore({
               variables: {
-                limit: 10,
+                limit: 9,
                 cursor: flashcards[flashcards.length - 1].createdAt
               }
             })
@@ -251,20 +254,20 @@ const Home: React.FC = () => {
               <div className="col-span-2">
                 <div className="w-4/5 h-full relative text-gray-600">
                   <input
-                    value={searchFlashcardTerm}
+                    value={searchFlashcardInputValue}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         handleSearchFlashcards()
                       }
                     }}
-                    onChange={e => setSearchFlashcardTerm(removeSpecialChars(e.target.value))}
+                    onChange={e => setSearchFlashcardInputValue(removeSpecialChars(e.target.value))}
                     style={{ border: '1px solid #ced4da' }}
-                    className="border-2 h-full w-full bg-white px-4 pr-12 rounded text-sm focus:outline-none"
-                    type="text"
+                    className="border-2 h-full w-full bg-white px-4 pr-10 rounded text-sm focus:outline-none"
+                    type="search"
                     placeholder="Search for anything"
                   />
                   <button className="absolute w-10 h-10 right-0 top-0" onClick={() => {
-                    if (searchFlashcardTerm) {
+                    if (searchFlashcardInputValue) {
                       handleSearchFlashcards()
                     }
                   }}>

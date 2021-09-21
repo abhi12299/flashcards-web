@@ -4,6 +4,7 @@ query FlashcardsFeed(
   $tags: [String!]
   $difficulty: Difficulty
   $username: String
+  $searchTerm: String
 ) {
   flashcardsFeed(
     input: {
@@ -12,6 +13,7 @@ query FlashcardsFeed(
       tags: $tags
       difficulty: $difficulty
       username: $username
+      searchTerm: $searchTerm
     }
   ) {
     hasMore
