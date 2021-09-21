@@ -1,0 +1,6 @@
+query SearchTags($term: String!) {
+  searchTags(input: { term: $term }) {
+    id
+    name
+  }
+}

@@ -498,6 +498,30 @@ export type FlashcardsFeedQuery = (
   ) }
 );
 
+export type MyTopTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyTopTagsQuery = (
+  { __typename?: 'Query' }
+  & { myTopTags: Array<(
+    { __typename?: 'Tag' }
+    & Pick<Tag, 'id' | 'name'>
+  )> }
+);
+
+export type SearchTagsQueryVariables = Exact<{
+  term: Scalars['String'];
+}>;
+
+
+export type SearchTagsQuery = (
+  { __typename?: 'Query' }
+  & { searchTags: Array<(
+    { __typename?: 'Tag' }
+    & Pick<Tag, 'id' | 'name'>
+  )> }
+);
+
 export type UserQueryVariables = Exact<{
   username?: Maybe<Scalars['String']>;
 }>;
@@ -897,6 +921,77 @@ export function useFlashcardsFeedLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type FlashcardsFeedQueryHookResult = ReturnType<typeof useFlashcardsFeedQuery>;
 export type FlashcardsFeedLazyQueryHookResult = ReturnType<typeof useFlashcardsFeedLazyQuery>;
 export type FlashcardsFeedQueryResult = Apollo.QueryResult<FlashcardsFeedQuery, FlashcardsFeedQueryVariables>;
+export const MyTopTagsDocument = gql`
+    query MyTopTags {
+  myTopTags {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useMyTopTagsQuery__
+ *
+ * To run a query within a React component, call `useMyTopTagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyTopTagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyTopTagsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyTopTagsQuery(baseOptions?: Apollo.QueryHookOptions<MyTopTagsQuery, MyTopTagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyTopTagsQuery, MyTopTagsQueryVariables>(MyTopTagsDocument, options);
+      }
+export function useMyTopTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyTopTagsQuery, MyTopTagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyTopTagsQuery, MyTopTagsQueryVariables>(MyTopTagsDocument, options);
+        }
+export type MyTopTagsQueryHookResult = ReturnType<typeof useMyTopTagsQuery>;
+export type MyTopTagsLazyQueryHookResult = ReturnType<typeof useMyTopTagsLazyQuery>;
+export type MyTopTagsQueryResult = Apollo.QueryResult<MyTopTagsQuery, MyTopTagsQueryVariables>;
+export const SearchTagsDocument = gql`
+    query SearchTags($term: String!) {
+  searchTags(input: {term: $term}) {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useSearchTagsQuery__
+ *
+ * To run a query within a React component, call `useSearchTagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchTagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchTagsQuery({
+ *   variables: {
+ *      term: // value for 'term'
+ *   },
+ * });
+ */
+export function useSearchTagsQuery(baseOptions: Apollo.QueryHookOptions<SearchTagsQuery, SearchTagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchTagsQuery, SearchTagsQueryVariables>(SearchTagsDocument, options);
+      }
+export function useSearchTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchTagsQuery, SearchTagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchTagsQuery, SearchTagsQueryVariables>(SearchTagsDocument, options);
+        }
+export type SearchTagsQueryHookResult = ReturnType<typeof useSearchTagsQuery>;
+export type SearchTagsLazyQueryHookResult = ReturnType<typeof useSearchTagsLazyQuery>;
+export type SearchTagsQueryResult = Apollo.QueryResult<SearchTagsQuery, SearchTagsQueryVariables>;
 export const UserDocument = gql`
     query User($username: String) {
   user(input: {username: $username}) {

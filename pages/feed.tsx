@@ -2,10 +2,11 @@ import { useApolloClient } from '@apollo/client'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { Dropdown } from 'primereact/dropdown'
-import React, { useEffect, useState } from 'react'
+import { Mention } from 'primereact/mention'
+import React, { useEffect, useRef, useState } from 'react'
 import FlashcardsList from '../components/FlashcardsList'
 import Layout from '../components/Layout'
-import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation } from '../generated/graphql'
+import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation, useMyTopTagsQuery, useSearchTagsQuery } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import { withApollo } from '../utils/withApollo'
 
@@ -13,11 +14,45 @@ const Home: React.FC = () => {
   const { query, isReady, push, replace } = useRouter()
   const [tags, setTags] = useState<string[]>([])
   const [difficulty, setDifficulty] = useState<Difficulty>()
-
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
+  const tagSearchInputRef = useRef<HTMLInputElement>(null)
   const { data: userData, loading: authChecking } = useIsAuthRequired()
   const apolloClient = useApolloClient()
   const [forkFlashcard, { loading: forking }] = useForkFlashcardMutation()
-  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore, variables }] = useFlashcardsFeedLazyQuery()
+  const [getFlashcardsFeed, { data, error, loading: fetching, fetchMore }] = useFlashcardsFeedLazyQuery()
+  const { refetch, loading: searching } = useSearchTagsQuery({
+    fetchPolicy: 'network-only',
+    skip: true
+  })
+  const { data: myTopTags } = useMyTopTagsQuery()
+
+  useEffect(() => {
+    if (tagSearchInputRef.current) {
+      tagSearchInputRef.current.setAttribute('rows', '1')
+      tagSearchInputRef.current.setAttribute('placeholder', 'Type # to filter by tags')
+    }
+  }, [tagSearchInputRef])
+
+  useEffect(() => {
+    if (myTopTags?.myTopTags) {
+      setTagSuggestions(myTopTags.myTopTags.map(t => t.name))
+    }
+  }, [myTopTags])
+
+  const handleSearchTags = async (term: string) => {
+    if (searching) return
+    if (!term && myTopTags?.myTopTags) {
+      setTagSuggestions(myTopTags.myTopTags.map(t => t.name))
+    }
+    if (term && refetch) {
+      try {
+        const { data } = await refetch({ term })
+        setTagSuggestions(data.searchTags.map(t => t.name))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
 
   useEffect(() => {
     if (!isReady) return
@@ -29,6 +64,10 @@ const Home: React.FC = () => {
       tags = []
     }
     setTags(tags)
+    if (tagSearchInputRef.current && tags.length > 0) {
+      console.log('setting initial value in tag filter')
+      tagSearchInputRef.current.value = `${tags.map(t => `#${t}`).join(' ')} `
+    }
 
     if (typeof difficulty === 'string') {
       switch (difficulty.toLowerCase()) {
@@ -52,6 +91,13 @@ const Home: React.FC = () => {
         query: {
           ...query,
           tags: `${tags.join(',')}`
+        }
+      })
+    } else {
+      delete query.tags
+      replace({
+        query: {
+          ...query
         }
       })
     }
@@ -101,6 +147,18 @@ const Home: React.FC = () => {
       apolloClient.cache.evict({ fieldName: 'flashcardsFeed' })
     } else {
       console.error('cannot fork!', errors, data)
+    }
+  }
+
+  const updateTagFilter = () => {
+    if (!tagSearchInputRef.current) return
+    // dedup and remove empty tags
+    let inputTags = tagSearchInputRef.current.value.split('#').map(t => t.trim()).filter(t => t)
+    inputTags = Array.from(new Set(inputTags))
+    if (inputTags.length > 0) {
+      setTags(inputTags)
+    } else {
+      setTags([])
     }
   }
 
@@ -157,7 +215,7 @@ const Home: React.FC = () => {
             <h1 className="text-2xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4">
               Your Feed
             </h1>
-            <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {/* difficulty dropdown */}
               <div className="col-span-1">
                 <Dropdown
@@ -180,9 +238,19 @@ const Home: React.FC = () => {
                 />
               </div>
               {/* tags filter */}
-              <div className="col-span-1">
-                {/* use with filtering: https://primefaces.org/primereact/showcase/#/multiselect */}
-                Tags filter
+              <div className="text-right col-span-2">
+                <Mention
+                  suggestions={tagSuggestions}
+                  inputRef={tagSearchInputRef}
+                  onSearch={(e) => handleSearchTags(e.query)}
+                  delay={500}
+                  trigger="#"
+                  inputClassName="w-full resize-none"
+                  className="w-2/4"
+                />
+                <button className="ml-2 outline-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => updateTagFilter()}>
+                  Filter
+                </button>
               </div>
               {/* search section */}
               <div className="col-span-2">Search section</div>

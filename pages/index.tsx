@@ -12,7 +12,6 @@ function Home() {
     fetchPolicy: 'network-only'
   })
 
-  console.log('user', data)
   return (
     <>
       <Head>

@@ -1,0 +1,6 @@
+query MyTopTags {
+  myTopTags {
+    id
+    name
+  }
+}
