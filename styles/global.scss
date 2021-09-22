@@ -29,3 +29,7 @@ $aos-distance: 10px;
 .feat {
     min-height: 200px;
 }
+
+.tag-chips::before {
+    content: '#';
+}

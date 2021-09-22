@@ -85,10 +85,12 @@ const FlashcardsList: React.FC<{
                     f.tags.map(t => (
                       <span
                         key={t.id}
+                        style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '50%', textOverflow: 'ellipsis' }}
                         onClick={() => handleTagClick(t.name)}
-                        className="cursor-pointer inline-block my-1 bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+                        className="tag-chips cursor-pointer inline-block my-1 bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+                        title={`#${t.name}`}
                       >
-                        #{t.name}
+                        {t.name}
                       </span>
                     ))
                   }

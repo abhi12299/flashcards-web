@@ -98,6 +98,9 @@ const CreateFlashcard: React.FC = () => {
         if (inpTags!.length > 5) {
           errors.tags = 'You cannot add more than 5 tags.'
         }
+        if (inpTags!.find(t => t.length > 20)) {
+          errors.tags = 'Tags can have a maximum of 20 characters.'
+        }
       }
       return errors
     }
