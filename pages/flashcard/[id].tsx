@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react'
 import { FlashcardStatus, useFlashcardLazyQuery, useRespondToFlashcardMutation } from '../../generated/graphql'
 import { useIsAuthRequired } from '../../hooks/useIsAuthRequired'
 import { withApollo } from '../../utils/withApollo'
+import Error from '../_error'
 
 const FlashcardPage: React.FC = () => {
   const { query: { id }, push } = useRouter()
@@ -47,21 +48,11 @@ const FlashcardPage: React.FC = () => {
   }
 
   if (error) {
-    // maybe goto code 500
-    return (
-      <div>
-        Error while fetching card!
-      </div>
-    )
+    return <Error statusCode={500} />
   }
 
   if (!data || !data.flashcard) {
-    // goto 404
-    return (
-      <div>
-        Not found!
-      </div>
-    )
+    return <Error statusCode={404} />
   }
 
   return (

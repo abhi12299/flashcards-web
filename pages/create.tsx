@@ -177,7 +177,7 @@ const CreateFlashcard: React.FC = () => {
                 delay={500}
                 trigger="#"
                 inputClassName="w-full resize-none"
-                className="w-2/4"
+                className="my-2 w-2/4"
               />
               {errors.tags && <FormikErrorText>{errors.tags}</FormikErrorText>}
             </div>
@@ -185,57 +185,61 @@ const CreateFlashcard: React.FC = () => {
               <h5 className="h5 font-semibold">
                 Difficulty
               </h5>
-              {
-                difficultyValues.map(d => (
-                  <label key={d} className="inline-flex items-center">
-                    <input
-                      value={d}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      checked={values.difficulty === d}
-                      style={{ borderRadius: '50%' }}
-                      className="form-radio w-5 h-5"
-                      type="radio"
-                      name="difficulty"
-                    >
-                    </input>
-                    <span className="ml-2 text-gray-700">{toTitleCase(d)}</span>
-                  </label>
-                ))
-              }
+              <div className="mt-2 flex flex-col">
+                {
+                  difficultyValues.map(d => (
+                    <label key={d} className="inline-flex items-center">
+                      <input
+                        value={d}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        checked={values.difficulty === d}
+                        style={{ borderRadius: '50%' }}
+                        className="form-radio w-5 h-5"
+                        type="radio"
+                        name="difficulty"
+                      >
+                      </input>
+                      <span className="ml-2 text-gray-700">{toTitleCase(d)}</span>
+                    </label>
+                  ))
+                }
+              </div>
             </div>
             <div className="form-group mt-4 flex-col">
               <h5 className="h5 font-semibold">
                 Visibility
               </h5>
-              <label className="flex items-center">
-                <input
-                  value={'true'}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  checked={values.isPublic === 'true'}
-                  style={{ borderRadius: '50%' }}
-                  className="form-radio w-5 h-5"
-                  type="radio"
-                  name="isPublic"
-                >
-                </input>
-                <span className="ml-2 text-gray-700">Public</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  value={'false'}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  checked={values.isPublic === 'false'}
-                  style={{ borderRadius: '50%' }}
-                  className="form-radio w-5 h-5"
-                  type="radio"
-                  name="isPublic"
-                >
-                </input>
-                <span className="ml-2 text-gray-700">Private</span>
-              </label>
+              <div className="mt-2">
+                <label className="flex items-center">
+                  <input
+                    value={'true'}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    checked={values.isPublic === 'true'}
+                    style={{ borderRadius: '50%' }}
+                    className="form-radio w-5 h-5"
+                    type="radio"
+                    name="isPublic"
+                  >
+                  </input>
+                  <span className="ml-2 text-gray-700">Public</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    value={'false'}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    checked={values.isPublic === 'false'}
+                    style={{ borderRadius: '50%' }}
+                    className="form-radio w-5 h-5"
+                    type="radio"
+                    name="isPublic"
+                  >
+                  </input>
+                  <span className="ml-2 text-gray-700">Private</span>
+                </label>
+              </div>
             </div>
             <button
               type="submit"
