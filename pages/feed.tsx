@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/client'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -91,7 +91,7 @@ const Home: React.FC = () => {
       setSearchFlashcardInputValue(removeSpecialChars(q))
       setSearchFlashcardTerm(removeSpecialChars(q))
     }
-  }, [isReady])
+  }, [isReady, query])
 
   useEffect(() => {
     if (!isReady || authChecking || fetching || !userData?.user || error) return
@@ -103,7 +103,7 @@ const Home: React.FC = () => {
         searchTerm: searchFlashcardTerm
       }
     })
-  }, [error, fetching, getFlashcardsFeed, isReady, searchFlashcardTerm, tags, difficulty, authChecking, userData])
+  }, [error, query, fetching, getFlashcardsFeed, isReady, searchFlashcardTerm, tags, difficulty, authChecking, userData])
 
   const updateTagsQueryParams = (tags: string[]) => {
     if (tags.length > 0) {
@@ -191,6 +191,14 @@ const Home: React.FC = () => {
     }
   }
 
+  const clearTagFilter = () => {
+    setTags([])
+    updateTagsQueryParams([])
+    if (tagSearchInputRef.current) {
+      tagSearchInputRef.current.value = ''
+    }
+  }
+
   const handleSearchFlashcards = () => {
     updateSearchFlashcardQueryParam(searchFlashcardInputValue)
     setSearchFlashcardTerm(searchFlashcardInputValue)
@@ -215,7 +223,6 @@ const Home: React.FC = () => {
   } else {
     pageContent = (
       <>
-        has more: {data.flashcardsFeed.hasMore ? 'yes' : 'no'}
         <FlashcardsList
           hasMore={data.flashcardsFeed.hasMore}
           fetchMore={async () => {
@@ -249,10 +256,10 @@ const Home: React.FC = () => {
             <h1 className="text-2xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4">
               Your Feed
             </h1>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
               {/* search section */}
               <div className="col-span-2">
-                <div className="w-4/5 h-full relative text-gray-600">
+                <div className="w-4/5 h-10 relative text-gray-600">
                   <input
                     value={searchFlashcardInputValue}
                     onKeyDown={e => {
@@ -276,7 +283,7 @@ const Home: React.FC = () => {
                 </div>
               </div>
               {/* tags filter */}
-              <div className="flex flex-row justify-end col-span-2">
+              <div className="flex flex-row md:justify-end col-span-2">
                 <Mention
                   suggestions={tagSuggestions}
                   inputRef={tagSearchInputRef}
@@ -286,6 +293,12 @@ const Home: React.FC = () => {
                   inputClassName="w-full resize-none"
                   className="w-2/4"
                 />
+                {
+                  tags.length > 0 &&
+                  <button onClick={() => clearTagFilter()} className="ml-2 outline-none bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full">
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                }
                 <button className="ml-2 outline-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => updateTagFilter()}>
                   Filter
                 </button>
