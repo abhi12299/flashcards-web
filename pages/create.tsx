@@ -1,6 +1,8 @@
 import { useFormik } from 'formik';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import { Difficulty, useCreateFlashcardMutation } from '../generated/graphql';
 import { withApollo } from '../utils/withApollo';
 
@@ -62,75 +64,84 @@ const CreateFlashcard: React.FC = () => {
   })
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="title"
-          type="text"
-          placeholder="Title"
-          value={values.title}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        >
-        </input>
-        {errors.title && <p>{errors.title}</p>}
-        <br />
-        <textarea
-          name="body"
-          placeholder="Write something you want to remember..."
-          value={values.body}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        >
-        </textarea>
-        {errors.body && <p>{errors.body}</p>}
-        <br />
-        {/* use https://primefaces.org/primereact/showcase/#/mention */}
-        <input
-          placeholder="Add some tags..."
-          type="text"
-          onChange={(e) => {
-            if (!e.target.value) {
-              setTags([])
-              return
+    <>
+      <Head>
+        <title>Flashcards</title>
+        <meta name="description" content="A community driven, open source flashcard website." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Layout>
+        <div className="container max-w-6xl mx-auto px-5 sm:px-6 pt-20 md:pt-30">
+          <form onSubmit={handleSubmit}>
+            <input
+              name="title"
+              type="text"
+              placeholder="Title"
+              value={values.title}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            >
+            </input>
+            {errors.title && <p>{errors.title}</p>}
+            <br />
+            <textarea
+              name="body"
+              placeholder="Write something you want to remember..."
+              value={values.body}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            >
+            </textarea>
+            {errors.body && <p>{errors.body}</p>}
+            <br />
+            {/* use https://primefaces.org/primereact/showcase/#/mention */}
+            <input
+              placeholder="Add some tags..."
+              type="text"
+              onChange={(e) => {
+                if (!e.target.value) {
+                  setTags([])
+                  return
+                }
+                setTags(e.target.value.split(',').map(t => t.trim().toLowerCase()))
+              }}
+              value={tags.join(', ')}
+            >
+            </input>
+            {tags.length === 0 && <p>Add atleast 1 tag!</p>}
+            {
+              difficultyValues.map(d => (
+                <div key={d}>
+                  <label>
+                    {d}
+                    <input
+                      value={d}
+                      type="radio"
+                      name="difficulty"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      checked={values.difficulty === d}
+                    ></input>
+                  </label>
+                </div>
+              ))
             }
-            setTags(e.target.value.split(',').map(t => t.trim().toLowerCase()))
-          }}
-          value={tags.join(', ')}
-        >
-        </input>
-        {tags.length === 0 && <p>Add atleast 1 tag!</p>}
-        {
-          difficultyValues.map(d => (
-            <div key={d}>
-              <label>
-                {d}
-                <input
-                  value={d}
-                  type="radio"
-                  name="difficulty"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  checked={values.difficulty === d}
-                ></input>
-              </label>
-            </div>
-          ))
-        }
-        <label>
-          Is Public?
-          <input
-            type="checkbox"
-            name="isPublic"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            checked={values.isPublic}
-          >
-          </input>
-        </label>
-        <button type="submit">Create Flashcard</button>
-      </form>
-    </div>
+            <label>
+              Is Public?
+              <input
+                type="checkbox"
+                name="isPublic"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                checked={values.isPublic}
+              >
+              </input>
+            </label>
+            <button type="submit">Create Flashcard</button>
+          </form>
+        </div>
+      </Layout>
+    </>
   )
 }
 
