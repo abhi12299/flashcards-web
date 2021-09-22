@@ -97,7 +97,7 @@ const Home: React.FC = () => {
     if (!isReady || authChecking || fetching || !userData?.user || error) return
     getFlashcardsFeed({
       variables: {
-        limit: 9,
+        limit: 12,
         tags: tags.length > 0 ? tags : undefined,
         difficulty: difficulty || undefined,
         searchTerm: searchFlashcardTerm
@@ -222,7 +222,7 @@ const Home: React.FC = () => {
     )
   } else {
     pageContent = (
-      <>
+      <div className="my-10">
         <FlashcardsList
           hasMore={data.flashcardsFeed.hasMore}
           fetchMore={async () => {
@@ -230,7 +230,7 @@ const Home: React.FC = () => {
             const { flashcards } = data.flashcardsFeed
             fetchMore({
               variables: {
-                limit: 9,
+                limit: 12,
                 cursor: flashcards[flashcards.length - 1].createdAt
               }
             })
@@ -239,7 +239,7 @@ const Home: React.FC = () => {
           userData={userData}
           handleFork={handleFork}
         />
-      </>
+      </div>
     )
   }
 

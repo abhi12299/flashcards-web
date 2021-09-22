@@ -55,7 +55,7 @@ const ProfilePage: React.FC = () => {
     }
     getUserFlashcards({
       variables: {
-        limit: 10,
+        limit: 12,
         username: username
       }
     })
@@ -106,7 +106,7 @@ const ProfilePage: React.FC = () => {
               const { flashcards } = userFcData.userFlashcards
               fetchMore({
                 variables: {
-                  limit: 10,
+                  limit: 12,
                   cursor: flashcards[flashcards.length - 1].createdAt
                 }
               })
