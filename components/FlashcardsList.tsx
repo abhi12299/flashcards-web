@@ -59,7 +59,7 @@ const FlashcardsList: React.FC<{
     >
       {
         flashcards.map(f => (
-          <div className="col-span-1" style={{ minHeight: '150px' }} key={f.randId}>
+          <div className="col-span-1" style={{ minHeight: '150px', height: 'fit-content' }} key={f.randId}>
             <div className="h-full border border-gray-400 lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
               <div>
                 {
@@ -76,7 +76,7 @@ const FlashcardsList: React.FC<{
                   </p>
                 }
                 <Link href={`/flashcard/${f.randId}`}>
-                  <a title={f.title} className="text-gray-900 font-bold text-xl mb-2 line-clamp-1">
+                  <a title={f.title} className="text-gray-900 font-bold md:text-xl text-md mb-2 line-clamp-1">
                     {f.title}
                   </a>
                 </Link>
@@ -86,7 +86,7 @@ const FlashcardsList: React.FC<{
                       <span
                         key={t.id}
                         onClick={() => handleTagClick(t.name)}
-                        className="cursor-pointer inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+                        className="cursor-pointer inline-block my-1 bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
                       >
                         #{t.name}
                       </span>

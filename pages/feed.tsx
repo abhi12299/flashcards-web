@@ -6,8 +6,10 @@ import { useRouter } from 'next/router'
 import { Dropdown } from 'primereact/dropdown'
 import { Mention } from 'primereact/mention'
 import React, { useEffect, useRef, useState } from 'react'
+import Fab from '../components/Fab'
 import FlashcardsList from '../components/FlashcardsList'
 import Layout from '../components/Layout'
+import Spinner from '../components/Spinner'
 import { Difficulty, useFlashcardsFeedLazyQuery, useForkFlashcardMutation, useMyTopTagsQuery, useSearchTagsQuery } from '../generated/graphql'
 import { useIsAuthRequired } from '../hooks/useIsAuthRequired'
 import { removeSpecialChars } from '../utils/removeSpecialChars'
@@ -208,17 +210,23 @@ const Home: React.FC = () => {
 
   if (error) {
     pageContent = (
-      <div>
-        Something aint right!
+      <div className="my-10 text-red-600">
+        Something went wrong. Please try again later.
       </div>
     )
   } else if (fetching || !isReady) {
     pageContent = (
-      <div>Loading...</div>
+      <div style={{ maxWidth: '80px' }} className="text-center my-10 mx-auto">
+        <Spinner />
+      </div>
     )
-  } else if (!data) {
+  } else if (!data || data.flashcardsFeed.flashcards.length === 0) {
     pageContent = (
-      <div>No data!</div>
+      <div className="my-10">
+        <h4 className="h4 text-gray-800">
+          No flashcards found!
+        </h4>
+      </div>
     )
   } else {
     pageContent = (
@@ -274,9 +282,7 @@ const Home: React.FC = () => {
                     placeholder="Search for anything"
                   />
                   <button className="absolute w-10 h-10 right-0 top-0" onClick={() => {
-                    if (searchFlashcardInputValue) {
-                      handleSearchFlashcards()
-                    }
+                    handleSearchFlashcards()
                   }}>
                     <FontAwesomeIcon icon={faSearch} />
                   </button>
@@ -335,6 +341,7 @@ const Home: React.FC = () => {
               pageContent
           }
         </div>
+        {userData?.user && <Fab />}
       </Layout>
     </>
   )
