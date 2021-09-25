@@ -97,11 +97,10 @@ const ProfileAvatarDropdown: React.FC<{
 }
 
 const Header = () => {
-  const { query, push } = useRouter()
+  const { push } = useRouter()
   const [loggingIn, setLoggingIn] = useState(false)
 
   const { loading, refetch: refetchMeQuery, data } = useUserQuery()
-  const nextRoute = query.next ? query.next as string : '/feed'
 
   const [login] = useLoginMutation()
   const [_, setTokenCookie] = useCookies(['token'])
@@ -132,8 +131,8 @@ const Header = () => {
         setTokenCookie('token', response.data?.login.accessToken!, {
           maxAge: (Date.now() + (1000 * 60 * 24 * 365)) / 1000 // 1y from now in seconds
         })
-        refetchMeQuery()
-        push(nextRoute)
+        await refetchMeQuery()
+        push('/feed')
       }
     } catch (error) {
       console.error(error)
