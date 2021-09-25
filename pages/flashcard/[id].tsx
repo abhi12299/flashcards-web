@@ -6,7 +6,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
-import Avatar from 'react-avatar';
+import Avatar from '../../components/Avatar';
 import Fab from '../../components/Fab';
 import Layout from '../../components/Layout';
 import { Difficulty, FlashcardStatus, useFlashcardLazyQuery, useRespondToFlashcardMutation } from '../../generated/graphql';
@@ -110,7 +110,9 @@ const FlashcardPage: React.FC = () => {
           <div className="flex items-center pb-5">
             <Link href={`/profile/${data.flashcard.creator.username}`}>
               <a>
-                <Avatar size="2.5rem" className="w-10 h-10 rounded-full mr-4" name={data.flashcard.creator.name} alt="Avatar of Writer" />
+                <div className="relative w-10 h-10 mr-4">
+                  <Avatar name={data.flashcard.creator.name} />
+                </div>
               </a>
             </Link>
             <div className="text-sm">

@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import Avatar from "react-avatar";
 import { useCookies } from "react-cookie";
 import { useLoginMutation, UserDocument, UserQuery, useUserQuery } from "../generated/graphql";
 import firebase from '../init/firebase';
+import Avatar from "./Avatar";
 import Spinner from "./Spinner";
 
 const ProfileAvatarDropdown: React.FC<{
@@ -59,7 +59,9 @@ const ProfileAvatarDropdown: React.FC<{
   return (
     <div className="relative">
       <div id="header-avatar" className="cursor-pointer">
-        <Avatar size="3rem" className="w-10 h-10 rounded-full" name={user!.name} alt="Avatar of Writer" />
+        <div className="relative w-10 h-10">
+          <Avatar name={user!.name} />
+        </div>
       </div>
       {
         showDropdown &&

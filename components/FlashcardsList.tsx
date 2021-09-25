@@ -4,8 +4,8 @@ import TimeAgo from 'javascript-time-ago';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Avatar from 'react-avatar';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Avatar from '../components/Avatar';
 import { Difficulty, FlashcardsFeedQuery, UserFlashcardsQuery, UserQuery } from '../generated/graphql';
 import { toTitleCase } from '../utils/toTitleCase';
 import Spinner from './Spinner';
@@ -104,7 +104,9 @@ const FlashcardsList: React.FC<{
               <div className="flex items-center">
                 <Link href={`/profile/${f.creator.username}`}>
                   <a>
-                    <Avatar size="2.5rem" className="w-10 h-10 rounded-full mr-4" name={f.creator.name} alt="Avatar of Writer" />
+                    <div className="relative w-10 h-10 mr-4">
+                      <Avatar name={f.creator.name} />
+                    </div>
                   </a>
                 </Link>
                 <div className="text-sm">
