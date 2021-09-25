@@ -1,6 +1,7 @@
 import { useApolloClient } from '@apollo/client';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+import Avatar from 'react-avatar';
 import FlashcardsList from '../../components/FlashcardsList';
 import { useForkFlashcardMutation, useUserFlashcardsLazyQuery, useUserLazyQuery } from '../../generated/graphql';
 import { useIsAuthRequired } from '../../hooks/useIsAuthRequired';
@@ -89,7 +90,7 @@ const ProfilePage: React.FC = () => {
     <div>
       {/* also allow name editingif this is current user */}
       <h2>{userData.user.name}</h2>
-      <img src={userData.user.profilePic} alt="avatar" />
+      <Avatar className="w-10 h-10 rounded-full mr-4" name={userData.user.name} alt="Avatar of Writer" />
       <p># of Flashcards: {userData.user.numFlashcards}</p>
       <hr />
       {

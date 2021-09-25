@@ -33,3 +33,13 @@ $aos-distance: 10px;
 .tag-chips::before {
     content: '#';
 }
+
+.ans-btn {
+    width: 80px;
+}
+
+@media (max-width: 600px) {
+    .ans-btn {
+        width: auto;
+    }
+}

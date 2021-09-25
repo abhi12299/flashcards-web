@@ -307,7 +307,6 @@ export type User = {
   name: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
-  profilePic: Scalars['String'];
   createdAt: Scalars['Float'];
   updatedAt: Scalars['Float'];
   numFlashcards: Scalars['Int'];
@@ -329,7 +328,7 @@ export type FlashcardMinimalFragment = (
   & Pick<Flashcard, 'randId' | 'isFork' | 'isForkedByYou' | 'title' | 'body' | 'difficulty' | 'createdAt' | 'isPublic'>
   & { creator: (
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'name' | 'profilePic'>
+    & Pick<User, 'username' | 'name'>
   ), tags: Array<(
     { __typename?: 'Tag' }
     & Pick<Tag, 'id' | 'name'>
@@ -343,7 +342,7 @@ export type RegularErrorFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'username' | 'name' | 'email' | 'profilePic'>
+  & Pick<User, 'username' | 'name' | 'email'>
 );
 
 export type CreateFlashcardMutationVariables = Exact<{
@@ -463,16 +462,16 @@ export type FlashcardQuery = (
   { __typename?: 'Query' }
   & { flashcard?: Maybe<(
     { __typename?: 'Flashcard' }
-    & Pick<Flashcard, 'randId' | 'title' | 'body' | 'isPublic' | 'isForkedByYou' | 'isFork' | 'difficulty' | 'status'>
+    & Pick<Flashcard, 'randId' | 'title' | 'body' | 'createdAt' | 'isPublic' | 'isForkedByYou' | 'isFork' | 'difficulty' | 'status'>
     & { tags: Array<(
       { __typename?: 'Tag' }
-      & Pick<Tag, 'name'>
+      & Pick<Tag, 'id' | 'name'>
     )>, stats?: Maybe<(
       { __typename?: 'FlashcardStats' }
       & Pick<FlashcardStats, 'avgTime' | 'numAttempts' | 'lastSeenOn'>
     )>, creator: (
       { __typename?: 'User' }
-      & Pick<User, 'name' | 'profilePic' | 'username'>
+      & Pick<User, 'name' | 'username'>
     ) }
   )> }
 );
@@ -566,7 +565,6 @@ export const FlashcardMinimalFragmentDoc = gql`
   creator {
     username
     name
-    profilePic
   }
   title
   body
@@ -590,7 +588,6 @@ export const RegularUserFragmentDoc = gql`
   username
   name
   email
-  profilePic
 }
     `;
 export const CreateFlashcardDocument = gql`
@@ -828,11 +825,13 @@ export const FlashcardDocument = gql`
     randId
     title
     body
+    createdAt
     isPublic
     isForkedByYou
     isFork
     difficulty
     tags {
+      id
       name
     }
     status
@@ -843,7 +842,6 @@ export const FlashcardDocument = gql`
     }
     creator {
       name
-      profilePic
       username
     }
   }

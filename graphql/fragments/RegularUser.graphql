@@ -2,5 +2,4 @@ fragment RegularUser on User {
   username
   name
   email
-  profilePic
 }

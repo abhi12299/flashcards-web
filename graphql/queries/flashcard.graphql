@@ -3,11 +3,13 @@ query Flashcard($randId: String!) {
     randId
     title
     body
+    createdAt
     isPublic
     isForkedByYou
     isFork
     difficulty
     tags {
+      id
       name
     }
     status
@@ -18,7 +20,6 @@ query Flashcard($randId: String!) {
     }
     creator {
       name
-      profilePic
       username
     }
   }

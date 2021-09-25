@@ -5,7 +5,6 @@ fragment FlashcardMinimal on Flashcard {
   creator {
     username
     name
-    profilePic
   }
   title
   body

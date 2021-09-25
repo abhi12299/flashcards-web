@@ -4,6 +4,7 @@ import TimeAgo from 'javascript-time-ago';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
+import Avatar from 'react-avatar';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Difficulty, FlashcardsFeedQuery, UserFlashcardsQuery, UserQuery } from '../generated/graphql';
 import { toTitleCase } from '../utils/toTitleCase';
@@ -96,14 +97,14 @@ const FlashcardsList: React.FC<{
                   }
                 </div>
                 <div className="pb-2 inline-block cursor-pointer" onClick={() => handleDifficultyClick(f.difficulty)}>
-                  <span className={`rounded-full mr-1 w-10 h-10 border-solid border-4 ${f.difficulty === Difficulty.Easy ? 'border-green-600' : ''} ${f.difficulty === Difficulty.Medium ? 'border-yellow-600' : ''} ${f.difficulty === Difficulty.Hard ? 'border-red-600' : ''}`}></span>
+                  <span className={`rounded-full mr-1 w-10 h-10 border-solid border-4 ${f.difficulty === Difficulty.Easy ? 'border-green-600' : ''} ${f.difficulty === Difficulty.Medium ? 'border-yellow-600' : ''} ${f.difficulty === Difficulty.Hard ? 'border-red-600' : ''}`} />
                   {toTitleCase(f.difficulty)}
                 </div>
               </div>
               <div className="flex items-center">
                 <Link href={`/profile/${f.creator.username}`}>
                   <a>
-                    <img className="w-10 h-10 rounded-full mr-4" src={f.creator.profilePic} alt="Avatar of Writer" />
+                    <Avatar size="2.5rem" className="w-10 h-10 rounded-full mr-4" name={f.creator.name} alt="Avatar of Writer" />
                   </a>
                 </Link>
                 <div className="text-sm">
