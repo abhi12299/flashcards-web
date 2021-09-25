@@ -59,7 +59,7 @@ const ProfileAvatarDropdown: React.FC<{
   return (
     <div className="relative">
       <div id="header-avatar" className="cursor-pointer">
-        <div className="relative w-10 h-10">
+        <div className="relative w-12 h-12">
           <Avatar name={user!.name} />
         </div>
       </div>

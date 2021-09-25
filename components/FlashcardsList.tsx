@@ -1,4 +1,4 @@
-import { faCodeBranch, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faEdit, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TimeAgo from 'javascript-time-ago';
 import Link from 'next/link';
@@ -67,6 +67,12 @@ const FlashcardsList: React.FC<{
                   f.creator.username === userData?.user?.username &&
                   <p className="float-right flex flex-row cursor-pointer w-6 h-6" onClick={() => handleEditClick(f.randId)}>
                     <FontAwesomeIcon className="w-full h-full" icon={faEdit} />
+                  </p>
+                }
+                {
+                  f.creator.username === userData?.user?.username && !f.isPublic &&
+                  <p className="float-right flex flex-row w-6 h-6" onClick={() => handleEditClick(f.randId)}>
+                    <FontAwesomeIcon className="w-full h-full" icon={faLock} />
                   </p>
                 }
                 {

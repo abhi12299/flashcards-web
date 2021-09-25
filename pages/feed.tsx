@@ -206,6 +206,12 @@ const Home: React.FC = () => {
     setSearchFlashcardTerm(searchFlashcardInputValue)
   }
 
+  const handleClearSearch = () => {
+    updateSearchFlashcardQueryParam('')
+    setSearchFlashcardTerm('')
+    setSearchFlashcardInputValue('')
+  }
+
   let pageContent: JSX.Element | null = null
 
   if (error) {
@@ -278,9 +284,14 @@ const Home: React.FC = () => {
                     onChange={e => setSearchFlashcardInputValue(removeSpecialChars(e.target.value))}
                     style={{ border: '1px solid #ced4da' }}
                     className="border-2 h-full w-full bg-white px-4 pr-10 rounded text-sm focus:outline-none"
-                    type="search"
+                    type="text"
                     placeholder="Search for anything"
                   />
+                  <button className="absolute w-10 h-10 right-7 top-0" onClick={() => {
+                    handleClearSearch()
+                  }}>
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
                   <button className="absolute w-10 h-10 right-0 top-0" onClick={() => {
                     handleSearchFlashcards()
                   }}>
@@ -316,7 +327,7 @@ const Home: React.FC = () => {
                   placeholder="Select Difficulty (all)"
                   value={difficulty || ''}
                   options={[
-                    { label: 'Select Difficulty (all)', value: '' },
+                    { label: 'All', value: '' },
                     { label: 'Easy', value: Difficulty.Easy },
                     { label: 'Medium', value: Difficulty.Medium },
                     { label: 'Hard', value: Difficulty.Hard },

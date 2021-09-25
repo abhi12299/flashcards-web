@@ -21,7 +21,7 @@ const MDEditor = dynamic(
 );
 
 const FlashcardPage: React.FC = () => {
-  const { query: { id }, push, back } = useRouter()
+  const { query: { id }, push } = useRouter()
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([])
   const tagInputRef = useRef<HTMLInputElement>(null)
 
@@ -180,6 +180,7 @@ const FlashcardPage: React.FC = () => {
             onSubmit={async (values) => {
               if (updating) return
 
+              const inpTags = getTagsFromInputRef()
               const { data, errors } = await updateFlashcard({
                 variables: {
                   randId: id as string,
@@ -187,11 +188,12 @@ const FlashcardPage: React.FC = () => {
                   body: values.body,
                   difficulty: values.difficulty,
                   isPublic: values.isPublic === 'true',
-                  tags: tags.filter(t => t.trim().length > 0)
+                  tags: inpTags
                 },
                 update(cache) {
                   // TODO: just update in the cache
                   cache.evict({ fieldName: 'flashcardsFeed' })
+                  cache.evict({ fieldName: 'userFlashcards' })
                 }
               })
               if (errors || !data || data.updateFlashcard.errors) {
@@ -273,10 +275,14 @@ const FlashcardPage: React.FC = () => {
                     <h5 className="h5 font-semibold">
                       Visibility
                     </h5>
+                    {data.flashcard!.isFork &&
+                      <small>Forked flashcards cannot be made public!</small>
+                    }
                     <div className="mt-2">
                       <label className="flex items-center">
                         <input
                           value="true"
+                          disabled={data.flashcard!.isFork}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           checked={values.isPublic === 'true'}
@@ -291,6 +297,7 @@ const FlashcardPage: React.FC = () => {
                       <label className="flex items-center">
                         <input
                           value="false"
+                          disabled={data.flashcard!.isFork}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           checked={values.isPublic === 'false'}
@@ -309,7 +316,7 @@ const FlashcardPage: React.FC = () => {
                     disabled={updating}
                     className="inline my-4 outline-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
                   >
-                    Edit
+                    Update
                   </button>
                   <button
                     className="inline ml-2 outline-none bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full"

@@ -138,7 +138,7 @@ const CreateFlashcard: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Flashcards</title>
+        <title>New Flashcard</title>
         <meta name="description" content="A community driven, open source flashcard website." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
