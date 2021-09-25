@@ -59,11 +59,8 @@ const About: React.FC = () => {
           <div className="mx-auto mt-10" data-aos="zoom-y-out">
             <div className="relative text-center">
               <div className="flex flex-col">
-                <div
-                  className="mb-2 cursor-pointer"
-                  onClick={() => window.open('https://github.com/abhi12299/flashcards-backend', '_blank')}
-                >
-                  <FontAwesomeIcon icon={faGithub} size="2x" />
+                <div>
+                  <FontAwesomeIcon className="mb-2 cursor-pointer" onClick={() => window.open('https://github.com/abhi12299/flashcards-backend', '_blank')} icon={faGithub} size="2x" />
                 </div>
                 <div className="font-semibold text-lg not-italic mt-3">
                   Consider starring on Github

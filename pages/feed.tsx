@@ -287,11 +287,13 @@ const Home: React.FC = () => {
                     type="text"
                     placeholder="Search for anything"
                   />
-                  <button className="absolute w-10 h-10 right-7 top-0" onClick={() => {
-                    handleClearSearch()
-                  }}>
-                    <FontAwesomeIcon icon={faTimes} />
-                  </button>
+                  {searchFlashcardInputValue &&
+                    <button className="absolute w-10 h-10 right-7 top-0" onClick={() => {
+                      handleClearSearch()
+                    }}>
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  }
                   <button className="absolute w-10 h-10 right-0 top-0" onClick={() => {
                     handleSearchFlashcards()
                   }}>
