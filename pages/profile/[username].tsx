@@ -121,7 +121,7 @@ const ProfilePage: React.FC = () => {
             userFcData && userFcData.userFlashcards.flashcards.length > 0 &&
             <div className="my-10">
               <FlashcardsList
-                userData={userData}
+                userData={meData}
                 hasMore={userFcData.userFlashcards.hasMore}
                 flashcards={userFcData.userFlashcards.flashcards}
                 handleFork={handleFork}

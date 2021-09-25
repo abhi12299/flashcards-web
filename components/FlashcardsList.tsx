@@ -60,7 +60,7 @@ const FlashcardsList: React.FC<{
     >
       {
         flashcards.map(f => (
-          <div className="col-span-1" style={{ minHeight: '150px', height: 'fit-content' }} key={f.randId}>
+          <div className="col-span-1" style={{ minHeight: '150px' }} key={f.randId}>
             <div className="h-full border border-gray-400 lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
               <div>
                 {
