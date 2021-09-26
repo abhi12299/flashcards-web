@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import Avatar from '../../components/Avatar';
+import Fab from '../../components/Fab';
 import FlashcardsList from '../../components/FlashcardsList';
 import Layout from '../../components/Layout';
 import { useForkFlashcardMutation, useUserFlashcardsLazyQuery, useUserLazyQuery } from '../../generated/graphql';
@@ -128,6 +129,9 @@ const ProfilePage: React.FC = () => {
             </div>
           }
         </div>
+        {userData.user.username === meData?.user?.username &&
+          <Fab />
+        }
       </Layout>
     </>
   )

@@ -179,7 +179,22 @@ const Header = () => {
             </Link>
           </div>
           <nav className="flex flex-grow">
-            <ul className="flex flex-grow justify-end flex-wrap items-center">
+            {
+              data?.user &&
+              <ul className="flex flex-row justify-end flex-wrap flex-grow mr-10">
+                <li
+                  className="hidden md:flex font-medium cursor-pointer text-gray-600 hover:text-gray-900 px-5 py-3 items-center transition duration-150 ease-in-out"
+                >
+                  <Link href="/create"><a>New Flashcard</a></Link>
+                </li>
+                <li
+                  className="hidden md:flex font-medium cursor-pointer text-gray-600 hover:text-gray-900 px-5 py-3 items-center transition duration-150 ease-in-out"
+                >
+                  <Link href="/feed"><a>Explore</a></Link>
+                </li>
+              </ul>
+            }
+            <ul className={`${!data?.user ? 'flex-grow' : ''} flex flex-row justify-items-end justify-end flex-wrap items-center`}>
               <li>
                 {
                   loading ?
