@@ -102,7 +102,7 @@ const ProfilePage: React.FC = () => {
               <ul className="space-x-8 mb-4">
                 <li>
                   <span className="font-semibold">{userData.user.numFlashcards}</span>
-                  &nbsp;flashcard{userData.user.numFlashcards > 1 ? 's' : ''}
+                  &nbsp;flashcard{userData.user.numFlashcards === 1 ? '' : 's'}
                 </li>
               </ul>
             </div>
