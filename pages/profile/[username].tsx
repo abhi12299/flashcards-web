@@ -8,6 +8,7 @@ import Layout from '../../components/Layout';
 import { useForkFlashcardMutation, useUserFlashcardsLazyQuery, useUserLazyQuery } from '../../generated/graphql';
 import { useIsAuthRequired } from '../../hooks/useIsAuthRequired';
 import { withApollo } from '../../utils/withApollo';
+import Error from '../_error';
 
 const ProfilePage: React.FC = () => {
   const { isReady, query: { username }, push } = useRouter()
@@ -65,27 +66,15 @@ const ProfilePage: React.FC = () => {
   }, [userData, fcLoading, fcError, getUserFlashcards, username])
 
   if (authChecking || loading) {
-    return (
-      <div>Loading...</div>
-    )
+    return null
   }
 
   if (error) {
-    // maybe goto code 500
-    return (
-      <div>
-        Error while fetching card!
-      </div>
-    )
+    return <Error statusCode={500} />
   }
 
   if (!userData || !userData.user) {
-    // goto 404
-    return (
-      <div>
-        Not found!
-      </div>
-    )
+    return <Error statusCode={404} />
   }
 
   return (

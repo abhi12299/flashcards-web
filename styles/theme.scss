@@ -123,10 +123,3 @@ button:focus,
 .translate-z-0 {
     transform: translateZ(0);
 }
-
-// Custom AOS animations
-[data-aos="zoom-y-out"] {
-  transform: scaleX(1.03);
-  opacity: 0;
-  transition-property: transform, opacity;
-}

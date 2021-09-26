@@ -15,24 +15,30 @@ const ProfileAvatarDropdown: React.FC<{
 }> = ({ user }) => {
   const { push } = useRouter()
   const [showDropdown, setShowDropdown] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [_, __, removeTokenCookie] = useCookies(['token'])
   const apolloClient = useApolloClient()
   const ref = useRef<HTMLUListElement>(null)
 
   const handleLogout = async () => {
+    if (loading) return
     try {
+      setLoading(true)
       setShowDropdown(false)
       await firebase.auth().signOut()
     } catch (error) {
       console.error(error)
     }
-    removeTokenCookie('token')
+    removeTokenCookie('token', {
+      expires: new Date(0)
+    })
     // clear store does not trigger query refetch
     await apolloClient.clearStore()
-    apolloClient.refetchQueries({
+    await apolloClient.refetchQueries({
       include: [UserDocument]
     })
     push('/')
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -60,7 +66,14 @@ const ProfileAvatarDropdown: React.FC<{
     <div className="relative">
       <div id="header-avatar" className="cursor-pointer">
         <div className="relative w-12 h-12">
-          <Avatar name={user!.name} />
+          {
+            loading ?
+              <div className="w-10 h-10">
+                <Spinner />
+              </div>
+              :
+              <Avatar name={user!.name} />
+          }
         </div>
       </div>
       {
@@ -156,16 +169,13 @@ const Header = () => {
     <header className={`top-0 fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top && 'bg-white blur shadow-lg'}`}>
       <div className="max-w-6xl mx-auto px-5 sm:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Site branding */}
           <div className="flex-shrink-0 mr-4">
-            {/* Logo */}
             <Link href="/" aria-label="Cruip">
               <a className="block">
                 Flashcards!
               </a>
             </Link>
           </div>
-          {/* Site navigation */}
           <nav className="flex flex-grow">
             <ul className="flex flex-grow justify-end flex-wrap items-center">
               <li>

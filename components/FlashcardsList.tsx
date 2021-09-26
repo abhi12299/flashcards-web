@@ -23,6 +23,7 @@ const FlashcardsList: React.FC<{
 
   const handleTagClick = (tag: string) => {
     push({
+      pathname: '/feed',
       query: {
         ...query,
         tags: tag
@@ -32,6 +33,7 @@ const FlashcardsList: React.FC<{
 
   const handleDifficultyClick = (diff: Difficulty) => {
     push({
+      pathname: '/feed',
       query: {
         ...query,
         difficulty: diff
@@ -60,7 +62,7 @@ const FlashcardsList: React.FC<{
     >
       {
         flashcards.map(f => (
-          <div className="col-span-1" style={{ minHeight: '150px' }} key={f.randId}>
+          <div className="col-span-1" style={{ minHeight: '150px', maxHeight: '270px' }} key={f.randId}>
             <div className="h-full border border-gray-400 lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
               <div>
                 {
@@ -94,7 +96,7 @@ const FlashcardsList: React.FC<{
                         key={t.id}
                         style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '50%', textOverflow: 'ellipsis' }}
                         onClick={() => handleTagClick(t.name)}
-                        className="tag-chips cursor-pointer inline-block my-1 bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+                        className="tag-chips cursor-pointer inline-block my-1 bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2"
                         title={`#${t.name}`}
                       >
                         {t.name}

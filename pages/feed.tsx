@@ -271,7 +271,6 @@ const Home: React.FC = () => {
               Your Feed
             </h1>
             <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
-              {/* search section */}
               <div className="col-span-2">
                 <div className="w-4/5 h-10 relative text-gray-600">
                   <input
@@ -301,7 +300,6 @@ const Home: React.FC = () => {
                   </button>
                 </div>
               </div>
-              {/* tags filter */}
               <div className="flex flex-row md:justify-end col-span-2">
                 <Mention
                   suggestions={tagSuggestions}
@@ -322,7 +320,6 @@ const Home: React.FC = () => {
                   Filter
                 </button>
               </div>
-              {/* difficulty dropdown */}
               <div className="col-span-1">
                 <Dropdown
                   className="w-full"

@@ -209,7 +209,7 @@ const FlashcardPage: React.FC = () => {
                 <Form>
                   <div className="form-group my-2">
                     <input
-                      className="text-2xl font-bold w-2/4 py-2 border-b-2 border-gray-400 focus:border-gray-600 placeholder-gray-400 outline-none"
+                      className="text-2xl font-bold md:w-2/4 w-full py-2 border-b-2 border-gray-400 focus:border-gray-600 placeholder-gray-400 outline-none"
                       name="title"
                       type="text"
                       autoComplete="off"
@@ -242,7 +242,7 @@ const FlashcardPage: React.FC = () => {
                       delay={500}
                       trigger="#"
                       inputClassName="w-full resize-none"
-                      className="my-2 w-2/4"
+                      className="my-2 md:w-2/4 w-full"
                     />
                     {errors.tags && <FormikErrorText>{errors.tags}</FormikErrorText>}
                   </div>

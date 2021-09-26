@@ -10,21 +10,15 @@
 @import 'toggle-switch.scss';
 @import 'theme.scss';
 
-// Additional Tailwind directives: https://tailwindcss.com/docs/functions-and-directives/#responsive
 @responsive {
     .rtl {
         direction: rtl;
     }
 }
 
-// See Alpine.js: https://github.com/alpinejs/alpine#x-cloak
 [x-cloak] {
     display: none;
 }
-
-// AOS styles
-$aos-distance: 10px;
-@import 'node_modules/aos/src/sass/aos.scss';
 
 .feat {
     min-height: 200px;
@@ -42,4 +36,16 @@ $aos-distance: 10px;
     .ans-btn {
         width: auto;
     }
+}
+
+.w-md-editor-toolbar {
+    height: fit-content !important;
+}
+
+.w-md-editor.w-md-editor-show-live {
+    overflow-y: auto;
+}
+
+.w-md-editor-content {
+    height: 100% !important;
 }
