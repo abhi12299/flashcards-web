@@ -1,7 +1,9 @@
 import { faGithub, faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from "next/image";
 import Link from 'next/link';
 import React from "react";
+import logo from '../public/logo.png';
 
 const Footer: React.FC = () => {
   return (
@@ -10,9 +12,9 @@ const Footer: React.FC = () => {
         <div className="grid sm:grid-cols-12 py-8 md:py-12 border-t border-gray-200">
           <div className="sm:col-span-12 md:col-span-10">
             <div className="mb-2">
-              <Link href="/" aria-label="Cruip">
-                <a className="inline-block">
-                  Flashcards!
+              <Link href="/">
+                <a className="logo-container relative block">
+                  <Image src={logo} quality="100" layout="fill" alt="logo" />
                 </a>
               </Link>
             </div>

@@ -1,12 +1,14 @@
 import { useApolloClient } from "@apollo/client";
 import { faBinoculars, faSignOutAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useLoginMutation, UserDocument, UserQuery, useUserQuery } from "../generated/graphql";
 import firebase from '../init/firebase';
+import logo from '../public/logo.png';
 import Avatar from "./Avatar";
 import Spinner from "./Spinner";
 
@@ -169,10 +171,10 @@ const Header = () => {
     <header className={`top-0 fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top && 'bg-white blur shadow-lg'}`}>
       <div className="max-w-6xl mx-auto px-5 sm:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <div className="flex-shrink-0 mr-4">
-            <Link href="/" aria-label="Cruip">
-              <a className="block">
-                Flashcards!
+          <div className="mx-5 md:mx-0 flex-shrink-0">
+            <Link href="/">
+              <a className="logo-container relative block">
+                <Image src={logo} quality="100" layout="fill" alt="logo" />
               </a>
             </Link>
           </div>
